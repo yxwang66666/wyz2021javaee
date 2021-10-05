@@ -1,0 +1,275 @@
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="icon" href="../../img/bookico.ico" sizes="144x144" type="images/x-ico" />
+    <title>图书管理系统 - 用户端</title>
+
+    <link rel="stylesheet" href="https://www.layuicdn.com/layui-v2.5.4/css/layui.css" media="all">
+    <script src="https://www.layuicdn.com/layui-v2.5.4/layui.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+</head>
+<script>
+    var detailData;
+    var par=localStorage.getItem('data');
+    var params=JSON.parse(par);
+    //console.log(params.account);
+</script>
+<body class="layui-layout-body">
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="getbook">借阅</a>
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="lookbook">查看图书信息</a>
+</script>
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">图书管理系统</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item"><a href="../../UserFirstPage.html">首页</a></li>
+            <li class="layui-nav-item layui-this"><a href="book_show.html">图书信息</a></li>
+            <li class="layui-nav-item"><a href="../user/user_show.html">用户</a></li>
+
+        </ul>
+
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="../../img/1.jpg" class="layui-nav-img">
+                    <script>
+                        document.write(params.account);
+                    </script>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="../user/user_show.html">基本资料</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="../../logout.html">注销</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a  href="javascript:;">图书信息</a>
+                    <dl class="layui-nav-child">
+                        <dd class="layui-this"><a href="book_show.html">图书展示</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;">我的信息</a>
+                    <dl class="layui-nav-child">
+                        <dd ><a href="../user/user_show.html">我的账号</a></dd>
+                        <dd ><a href="../borrow/borrow_show.html">当前借阅</a></dd>
+                        <dd ><a href="../borrow/return_show.html">借阅历史</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item ">
+                    <a class="" href="javascript:;">违约信息</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="../default/default_show.html">我的违约</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <div class="layui-form layui-form-pane">
+            <!-- 内容主体区域 -->
+            <div style="padding: 15px;">
+                <h2>图书概览</h2>
+
+            </div>
+            <div style="margin-top: 15px;padding-right: 30px;padding-left: 10px">
+                <h2>搜索与查询</h2>
+                <br/>
+                <div class="layui-input-item">
+                    <div class="layui-input-block layui-inline"style="margin-left: 10px">
+                        <input type="text" name="id" id="searchname"placeholder="请输入索引号" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-inline" data-type="reload" id="go">搜索</button>
+                    </div>
+                    <div class="layui-input-block layui-inline" id="selectMethod">
+                        <input type="radio" name="character"  value="索引查询" title="索引查询" id="byBarCode" checked>
+                        <input type="radio" name="character"  value="模糊查询" title="模糊查询" id="byAll">
+                    </div>
+                </div>
+
+                <br />
+                <table class="layui-hide" id="allbooks" lay-filter="test"></table>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © Copyright 2021   &nbsp;&nbsp;&nbsp;&nbsp;<a href="" style="color: #185582">网站说明</a>    &nbsp;&nbsp;&nbsp;&nbsp;<a href="" style="color: #185582">友情链接</a>
+    </div>
+</div>
+<script type="text/html" id="operation">
+    <button class="layui-btn" lay-event="lookbook">详细</button>
+</script>
+<script>
+    $("#selectMethod").on('click', function () {
+        var item=$('input:radio[id="byAll"]:checked').val();
+        if(item=="模糊查询")
+            window.location.href="book_show_vague.html";
+
+    })
+    layui.use(['laydate', 'laypage', 'layer', 'table', 'carousel', 'upload', 'element', 'slider'], function(){
+        var table = layui.table;
+
+        //第一个实例
+        table.render({
+            elem: '#allbooks'
+            ,height: 600
+            ,id: 'book'
+            ,url: 'http://localhost:8080/book/selectAll'
+            ,method:'get'
+  //          ,toolbar: 'default'
+            ,totalRow: true //合计行
+            ,page: true //分页
+            ,limit:8
+            ,limits: [3,5,8,10]
+            ,cols: [[ //表头
+                { type:'numbers',title:'序号',width: '5%',fixed: 'left'}
+                ,{field: 'barCode', title: '索引号', width:'14%'}
+                ,{field: 'title', title: '书名',width:'15%'}
+                ,{field: 'author',title: '作者',width: '10%'}
+                ,{field: 'publisher',title: '出版社',width: '14%'}
+                ,{field:'isbn',title:'ISBN',width:'16%'}
+                ,{field: 'isBorrowed',title: '状态',width: '8%'}
+                ,{title:'操作', toolbar: '#operation', width:'25%'}
+                ,{field: 'price',title: '价格'}
+                ,{field: 'introduction',title: '介绍'}
+                //,{fixed: 'right', width: 105, align:'center', toolbar: '#barDemo'}
+            ]]
+            ,done: function () {
+                $("[data-field='price']").css('display','none');
+                $("[data-field='introduction']").css('display','none');
+            }
+            ,parseData: function(res) { //res 即为原始返回的数据
+                if(res.list[0]==null)
+                    return {"code": 0, "msg": "", "count": res.total, "data": []};
+                for (j = 0, len = res.list.length; j < len; j++) {
+                    if (res.list[j].isBorrowed === false)
+                        res.list[j].isBorrowed = '在馆';
+                    else
+                        res.list[j].isBorrowed = '不在馆';
+                }
+                return {"code": 0, "msg": "", "count": res.total, "data": res.list};
+            }
+        });
+        $('#go').on('click',function (){
+
+            var serchit = $('#searchname').val();
+            if(serchit !== '')
+            {
+                if(document.getElementById("byBarCode").checked)
+                {
+                    table.reload('book',{
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    },
+                    method:'get',
+                    url: 'http://localhost:8080/book/selectByBarCode',
+                    where:{
+                        barCode:serchit,
+                    }
+                    ,page: {
+                        curr:1
+                    }
+                    })
+                }
+                else
+                {
+
+                    table.reload('book',{
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        },
+                        method:'get',
+                        url: 'http://localhost:8080/book/selectAll'
+                        ,page: {
+                            curr:1
+                        }
+                    })
+                }
+            }
+            else {
+                table.reload('book',{
+                    method:'get'
+                    ,url: 'http://localhost:8080/book/selectAll'
+                    ,page: {
+                        curr:1
+                    }
+                })
+            }
+            //console.log(serchit);
+
+        });
+        table.on('tool(test)', function(obj){ //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+            var data = obj.data //获得当前行数据
+                ,layEvent = obj.event; //获得 lay-event 对应的值
+            console.log(obj.event)
+            if(layEvent === 'borrow' && data.isBorrowed == "在馆"){
+                layer.confirm('确定借阅此书？请在30天之内归还', function(index){
+                    obj.update({
+                        isBorrowed:"不在馆"
+                    });
+                    layer.close(index);
+                    //向服务端发送删除指令
+                    $.ajax({
+                        url: 'http://localhost:8080/borrow/insertByBarCode',
+                        method: 'get',
+                        data:{userAccount:params.account,bookBarCode:data.barCode},
+                        dataType:'text',
+                    })
+                    layer.msg("借阅成功！");
+                    console.log(data);
+                });
+            }else if (layEvent === 'lookbook'){
+                detailData=data;
+                window.open("book_detail_show.html")
+                /*layer.open({
+                    type:0,
+                    content://'<img src="../../img/book'+data.id+'.jpg" width="120" height="80"><br><br>'+
+                        '索引号：'+data.barCode+'<br><br>'
+                        +'ISBN：'+data.isbn+'<br><br>'+'名称：'+data.title+'<br><br>'
+                        +'作者：'+data.author+'<br><br>'+'出版社：'+data.publisher+'<br><br>'
+                        +'价格：'+data.price+'<br><br>'+'简介：'+data.introduction+'<br><br>'
+                })*/
+
+            }
+            else {
+                //layer.msg('借阅失败！')
+            }
+        });
+
+
+
+    });
+
+
+    //监听行工具事件
+
+</script>
+
+<script>
+    //JavaScript代码区域
+
+    layui.use('element', function(){
+        var element = layui.element;
+
+    });
+</script>
+</body>
+</html>

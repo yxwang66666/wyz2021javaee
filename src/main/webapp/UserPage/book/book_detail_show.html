@@ -1,0 +1,170 @@
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="referrer" content="no-referrer">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="icon" href="../../img/bookico.ico" sizes="144x144" type="images/x-ico" />
+    <title>图书管理系统 - 用户端</title>
+
+    <link rel="stylesheet" href="https://www.layuicdn.com/layui-v2.5.4/css/layui.css" media="all">
+    <script src="https://www.layuicdn.com/layui-v2.5.4/layui.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+</head>
+
+<script>
+    var par=localStorage.getItem('data');
+    var params=JSON.parse(par);
+    var parentText = window.opener.detailData;
+    //console.log(params.account);
+</script>
+<body class="layui-layout-body">
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="getbook">借阅</a>
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="lookbook">查看图书信息</a>
+</script>
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">图书管理系统</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item"><a href="../../UserFirstPage.html">首页</a></li>
+            <li class="layui-nav-item layui-this"><a href="book_show.html">图书信息</a></li>
+            <li class="layui-nav-item"><a href="../user/user_show.html">用户</a></li>
+
+        </ul>
+
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="../../img/1.jpg" class="layui-nav-img">
+                    <script>
+                        document.write(params.account);
+                    </script>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="../user/user_show.html">基本资料</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="../../logout.html">注销</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a  href="javascript:;">图书信息</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="book_show.html">图书展示</a></dd>
+                        <dd class="layui-this"><a href="book_detail_show.html">详细信息</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <div class="layui-form layui-form-pane">
+            <!-- 内容主体区域 -->
+            <div style="padding: 15px;">
+                <h1 align="center">
+                    <style>
+                        h1
+                        {
+                            margin-top: 1%;
+                            font-family:"华光淡古印_CNKI";
+                        }
+                    </style>
+                    <script>
+                        document.write(parentText.title)
+                    </script>
+                </h1>
+
+
+                <img id="picture" src="" style="margin-left: 36%;margin-top: 4%" alt="" width="270px" height="390px"/>
+                <script>
+                    var pictureUrl = parentText.image;//后台传入的图片路径，url指的是数据库中图片的路径
+                    //判断是否为本地路径
+                    if(pictureUrl.slice(0,4)!='http')
+                    {
+                        var index=pictureUrl.indexOf('resources')
+                        pictureUrl='../../../'+pictureUrl.slice(index)
+                    }
+                    /*for(var i=0;i<pictureUrl.length;i++)
+                    {
+                        if(pictureUrl.charAt(i)=='/'&&pictureUrl.charAt(i-1)!='/'
+                            &&pictureUrl.charAt(i+1)!='/')
+                        {
+                            pictureUrl=pictureUrl.slice(0,i)+'//'+pictureUrl.slice(i+1)
+                            //console.log(pictureUrl)
+                        }
+                    }
+                    console.log(pictureUrl)*/
+                    document.getElementById("picture").src = pictureUrl;
+                </script>
+                <h2>
+                    <style>
+                        h2
+                        {
+                            margin-left:25% ;
+                            margin-top: 4%;
+                        }
+                    </style>
+                    <b>ISBN:&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</b>
+                    <script>
+                        document.write(parentText.isbn)
+                    </script>
+                </h2>
+                <h2>
+                    <b>作者:&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</b>
+                    <script>
+                        document.write(parentText.author)
+                    </script>
+                </h2>
+                <h2>
+                    <b>出版社:&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</b>
+                    <script>
+                        document.write(parentText.publisher)
+                    </script>
+                </h2>
+                <h2>
+                    <b>价格:&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</b>
+                    <script>
+                        document.write(parentText.price)
+                    </script>
+                </h2>
+                <h2>
+                    <b>介绍:</b>
+                    <div style="width: 500px">
+                        <script>
+                            document.write("&emsp;")
+                            document.write(parentText.introduction)
+                        </script>
+                    </div>
+                </h2>
+
+            </div>
+
+
+
+
+            </div>
+        </div>
+
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © Copyright 2021   &nbsp;&nbsp;&nbsp;&nbsp;<a href="" style="color: #185582">网站说明</a>    &nbsp;&nbsp;&nbsp;&nbsp;<a href="" style="color: #185582">友情链接</a>
+    </div>
+</div>
+<script type="text/html" id="operation">
+    <button class="layui-btn" lay-event="lookbook">详细</button>
+    <button class="layui-btn" lay-event="borrow">借阅</button>
+</script>
+
+
+
+</body>
+</html>

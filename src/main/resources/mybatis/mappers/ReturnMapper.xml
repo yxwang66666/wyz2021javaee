@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    private String userAccount;
+    private String bookBarcode;
+    private Date borrowDate;
+    private Date returnDate;
+-->
+
+<mapper namespace="com.example.bookmanagementsystem.mapper.ReturnMapper">
+    <select id="selectAll"
+            resultType="com.example.bookmanagementsystem.bean.ReturnRecord">
+        select returnRecord.userAccount, returnRecord.bookBarCode, title, borrowDate, returnDate
+        from returnRecord, barCode, book
+        where returnRecord.bookBarCode = barCode.barCode and
+              barCode.isbn = book.isbn
+    </select>
+
+    <select id="selectByAccount"
+            resultType="com.example.bookmanagementsystem.bean.ReturnRecord">
+        select returnRecord.userAccount, returnRecord.bookBarCode, title, borrowDate, returnDate
+        from returnRecord, barCode, book
+        where userAccount = #{userAccount} and
+              returnRecord.bookBarCode = barCode.barCode and
+              barCode.isbn = book.isbn
+    </select>
+
+    <insert id="insert">
+        insert into returnRecord values (
+            #{userAccount}, #{bookBarCode}, #{borrowDate}, #{returnDate}
+        )
+    </insert>
+</mapper>

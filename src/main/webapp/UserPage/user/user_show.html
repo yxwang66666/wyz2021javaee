@@ -1,0 +1,343 @@
+
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="shortcut icon" href="../../img/bookico.ico" type="image/x-ico" />
+    <title>图书管理系统 - 用户端</title>
+    <link rel="stylesheet" href="https://www.layuicdn.com/layui-v2.5.4/css/layui.css" media="all">
+    <script src="https://www.layuicdn.com/layui-v2.5.4/layui.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+</head>
+<script>
+    var par=localStorage.getItem('data');
+    var params=JSON.parse(par);
+    //console.log(params.account);
+</script>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">图书管理系统</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item  "><a href="../../UserFirstPage.html">首页</a></li>
+            <li class="layui-nav-item "><a href="../book/book_show.html">图书信息</a></li>
+            <li class="layui-nav-item layui-this"><a href="../user/user_show.html">用户</a></li>
+
+        </ul>
+
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="../../img/1.jpg" class="layui-nav-img">
+                    <script>
+                        document.write(params.account);
+                    </script>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="user_show.html">基本资料</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="../../logout.html">注销</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+                <li class="layui-nav-item ">
+                    <a class="" href="javascript:;">图书信息</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="../book/book_show.html">图书展示</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a href="javascript:;">我的信息</a>
+                    <dl class="layui-nav-child">
+                        <dd class="layui-this" ><a href="../user/user_show.html">我的账号</a></dd>
+                        <dd ><a href="../borrow/borrow_show.html">当前借阅</a></dd>
+                        <dd ><a href="../borrow/return_show.html">借阅历史</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item ">
+                    <a class="" href="javascript:;">违约信息</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="../default/default_show.html">我的违约</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style=" padding: 30px">
+            <h2>个人信息</h2>
+            <br />
+            <label class="layui-form-label">我的头像</label>
+            <img src="../../img/1.jpg" width="120" height="120">
+            <br />
+            <br /><br />
+            <div class="layui-form-item" style="margin-right: 50%">
+                <label class="layui-form-label">账号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="account" id="account" required  lay-verify="required"  autocomplete="off"readonly class="layui-input layui-disabled">
+                    <h3>
+                        <script>
+                            $("#account").attr("value",params.account)
+                        </script>
+                    </h3>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-right: 50%">
+                <label class="layui-form-label">昵称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="number" id="nickname" required lay-verify="required"  autocomplete="off"disabled  class="layui-input">
+                    <h3>
+                        <script>
+                            $("#nickname").attr("value",params.nickname)
+                        </script>
+                    </h3>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-right: 50%">
+                <label class="layui-form-label">电话</label>
+                <div class="layui-input-block">
+                    <input type="text" name="number" id="telephone" required  lay-verify="required"  autocomplete="off"disabled  class="layui-input ">
+                    <h3>
+                        <script>
+                            $("#telephone").attr("value",params.telephone)
+                        </script>
+                    </h3>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-right: 50%">
+                 <label class="layui-form-label">邮箱</label>
+            <div class="layui-input-block">
+                <input type="text" name="number" id="email" required  lay-verify="required"  autocomplete="off"disabled class="layui-input">
+                <h3>
+                    <script>
+                        $("#email").attr("value",params.email)
+                    </script>
+                </h3>
+            </div>
+        </div>
+            <div style="padding:15px;margin-left: 100px">
+                <button class="layui-btn" data-type="editinformation" onclick="modify()">修改信息</button>
+                <button class="layui-btn" data-type="saveinformation" onclick="save()">保存信息</button>
+                <button class="layui-btn" data-type="editpassword" onclick="go()">修改密码</button>
+            </div>
+
+    </div>
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © Copyright 2021   &nbsp;&nbsp;&nbsp;&nbsp;<a href="" style="color: #185582">网站说明</a>
+    </div>
+    </div>
+</div>
+<div style="padding: 15px;;display: none" id="edit" >
+    <h1>修改密码</h1>
+    <div class="layui-form layui-form-pane" > <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">旧密码</label>
+            <div class="layui-input-inline">
+                <input type="password" name="oldpassword" id="olp" required   placeholder="请输入当前密码" autocomplete="off" class="layui-input">
+            </div>
+            <i class="layui-icon layui-icon-password" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">新密码</label>
+            <div class="layui-input-inline">
+                <input type="password" name="newpassword" id="nep" required  placeholder="请输入新密码" lay-verify="pass" autocomplete="off" class="layui-input">
+            </div>
+            <i class="layui-icon layui-icon-password" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">重复密码</label>
+            <div class="layui-input-inline">
+                <input type="password" name="sepassword" id="sep"required  placeholder="请重复新密码" autocomplete="off" class="layui-input">
+            </div>
+            <i class="layui-icon layui-icon-password" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn"  onclick="submit()">立即提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../../jquery.js"> </script>
+<script>
+    //JavaScript代码区域
+    layui.use('element', function(){
+        var element = layui.element;
+
+    });
+    function modify()
+    {
+        $("#nickname").attr("disabled",false);
+        $("#telephone").attr("disabled",false);
+        $("#email").attr("disabled",false);
+    }
+    function save()
+    {
+        layui.use(['laydate', 'laypage', 'layer', 'carousel', 'upload', 'element', 'slider',], function() {
+        var phoneReg = /^1[0123456789]\d{9}$/;
+        var regm = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
+        var tele=$("#telephone").val();
+        var ema=$("#email").val()
+        if ($("#nickname").val() == "") {
+            layer.msg("昵称不能为空!");
+            return;
+        }
+        if (!tele.match(phoneReg)){
+            layer.msg("手机号格式错误!");
+            return;
+        }
+        if (!ema.match(regm))
+        {
+            layer.msg("邮箱地址格式错误或含有非法字符!\n请检查！");
+            return ;
+        }
+        else {
+            $.ajax({
+                    url: 'http://localhost:8080/user/update'
+                    , async: false
+                    , method: 'post'
+                    , contentType: "application/json"
+                    , data: JSON.stringify({
+                        account: $("#account").val(), password: null,
+                        nickname: $("#nickname").val(), telephone: $("#telephone").val(), email: $("#email").val()
+                    })
+                    , dataType: 'text'
+                    , success: function (callback) {
+                        res = callback;
+                    }
+                }
+            )
+        }
+        if(res==("update fail"))
+        {
+            alert("修改失败，请重试");
+            return;
+        }
+        else {
+            params.nickname=$("#nickname").val();
+            params.telephone=$("#telephone").val();
+            params.email= $("#email").val();
+            let parm=JSON.stringify(params);
+            console.log(parm)
+          localStorage.setItem('data',parm);
+            console.log(localStorage.getItem('data'));
+           var index1=layer. alert('修改成功',function(){
+
+               console.log(params);
+               layer.close(index1);
+           });
+
+
+        }
+    });
+    }
+    //layui.use(['laydate', 'laypage', 'layer', 'table', 'carousel', 'upload', 'element', 'slider'], function() {
+        function go() {
+            layui.use(['laydate', 'laypage', 'layer', 'table', 'carousel', 'upload', 'element', 'slider'], function() {
+                layer.open({
+                    type: 1,
+                    title: '修改密码',
+                    area: ['33%', '53%'],
+                    offset: 'auto',
+                    content: $('#edit'),
+                })
+            })
+        }
+   // })
+
+       function submit() {
+           var oldpassword = $('#olp').val();
+           var newpassword = $('#nep').val();
+           var sepassword = $('#sep').val();
+           var regpass = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,18}$/;
+           var result = '';
+           var murl = "http://localhost:8080/user/login?"
+           murl += "account=";
+           murl += params.account;
+           murl += "&password=";
+           murl += $('#olp').val();
+          var flag =false;
+           $.ajax({
+               type: "GET",
+               url: murl,
+               async: false,
+               cache: false,
+               success: function (data) {
+                   // console.log(data);
+                   if (data != "") {
+                     flag=true;
+
+                   } else {
+                       var index1=
+                       layer.alert("旧密码错误，请重新输入!",function() {
+                           layer.close(index1);
+                       })
+
+                   }
+               }
+           })
+         if (flag&&!newpassword.match(regpass)) {
+               layer.msg("新密码必须为6-18位含字母数字！");
+               return;
+           }
+          else if (flag&&newpassword !== sepassword) {
+               layer.msg('两次输入的密码不一致');
+               return;
+           }
+          if(flag==true) {
+               $.ajax({
+                   url: 'http://localhost:8080/user/update'
+                   ,async: false
+                   ,cache: false
+                   , method: 'post'
+                   , contentType: "application/json",
+                   data: JSON.stringify({
+                       account: params.account, password: $("#sep").val(),
+                       nickname: params.nickname, telephone: params.telephone, email: params.email
+                   }),
+                   dataType: 'text',
+                   success: function (callback) {
+                       result = callback;
+
+                   }
+               })
+
+               if (result === "update succeed") {
+                   $.ajax({
+                       url: 'http://localhost:8080/user/update',
+                       async: false,
+                       cache: false,
+                       method: 'post'
+                       , contentType: "application/json",
+                       data: JSON.stringify({
+                           account: params.account, password: $("#sep").val(),
+                           nickname: params.nickname, telephone: params.telephone, email: params.email
+                       }),
+                       dataType: 'text',
+                       success: function () {
+                           layer.alert("修改成功，请重新登录",function() {
+                               window.location.href = "../../login.html"
+                           })
+                       }
+                   })
+               } else if (result === "update fail") {
+                   layer.msg('密码错误');
+               }
+           }
+       }
+    //})
+</script>
+</body>
+</html>

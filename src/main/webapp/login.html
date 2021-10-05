@@ -1,0 +1,281 @@
+
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<html>
+<head>
+  <title>图书管理系统 - 登录</title>
+  <link rel="stylesheet" href="https://www.layuicdn.com/layui-v2.5.4/css/layui.css" media="all">
+
+  <link rel="shortcut icon" href="img/bookico.ico" type="image/x-ico" />
+  <script src="https://www.layuicdn.com/layui-v2.5.4/layui.js"></script>
+  <style>
+    html,body{
+      width:100%;
+      height:100%
+    }
+    body{
+      background: url('img/background1.png') no-repeat ;
+      background-origin: border-box;
+      background-size: cover;
+      background-attachment: fixed;
+      -webkit-background-size: cover;
+    }
+  </style>
+  </div>
+</head>
+
+
+
+
+<body   >
+<nav style="position: fixed; z-index: 100; height: 8vh; width: 96%;display: flex; justify-content: space-between;
+      align-items: center;padding: 10px 30px;">
+  <div style="color: #fff;font-weight: 600;font-size: 26px;">图书管理系统</div>
+</nav>
+<div id="main" style="background: rgba(255, 255, 255, 0.2);">
+<div >
+  <h1>
+    登录
+    <style>
+      h1{
+        margin:20px;
+        font-weight:400;
+        font-size:28px;
+        font-family:"Berlin Sans FB";
+        color:white;
+        text-shadow:2px 2px 4px rgba(0,0,0,0.2);
+        opacity:0.9;
+      }
+    </style>
+  </h1>
+  <form class="layui-form " > <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+    <style>
+      #main{
+        padding-top: 20px;
+        width:420px;
+        height:400px;
+        MARGIN-RIGHT: auto;
+        MARGIN-LEFT: auto;
+        background-color：rgba(255,255,255,0.25);
+        border-radius:30px;
+        postion:absolute;
+        top:50%;
+        left:50%;
+        transform:translate(3%,33%);
+
+        backdrop-filter:blur(8px);
+        border-left:2px solid rgba(255,255,255,0.25);
+        border-top:2px solid rgba(255,255,255,0.25);
+        box-shadow:2px 2px 10px rgba(255,255,255,0.5);
+        text-align:center;
+      }
+      input::-webkit-input-placeholder { /* WebKit browsers */
+        color:rgb(255,255,255);
+        text-shadow:1px 1px 2px rgba(0,0,0,0.2);
+      }
+    </style>
+    <div class="layui-form-item" style="color: whitesmoke" >
+      <label class="layui-form-label" >用户名</label>
+      <div class="layui-input-inline">
+        <input type="username"  style="background-color:transparent ;border-right:2px solid rgba(255,255,255,0.8) ;border-bottom:2px solid rgba(255,255,255,0.8);box-shadow:inset 2px 2px 2px rgba(0,0,0,0.2);
+                border-radius:16px;" name="account" required  lay-verify="username" placeholder="请输入用户名" onfocus="this.style.color='white'" autocomplete="off" class="layui-input" id="account">
+      </div>
+      <i class="layui-icon" style="font-size: 30px; color: #e0fcfb;"></i>
+    </div>
+    <div class="layui-form-item"style="color: whitesmoke">
+      <label class="layui-form-label">密码</label>
+      <div class="layui-input-inline">
+        <input type="password"  style="background-color:transparent ;border-right:2px solid rgba(255,255,255,0.8) ;border-bottom:2px solid rgba(255,255,255,0.8);box-shadow:inset 2px 2px 2px rgba(0,0,0,0.2);
+                border-radius:16px;" name="password" required lay-verify="password" placeholder="请输入密码" onfocus="this.style.color='white'" autocomplete="off" class="layui-input" id="password">
+      </div>
+      <i class="layui-icon layui-icon-password" style="font-size:30px; color: #e0fcfb;"></i>
+    </div>
+    <div class="layui-form-item"style="color: whitesmoke">
+      <label class="layui-form-label">验证码</label>
+      <div class="layui-input-inline">
+        <input type="text" style="background-color:transparent ;border-right:2px solid rgba(255,255,255,0.8) ;border-bottom:2px solid rgba(255,255,255,0.8);box-shadow:inset 2px 2px 2px rgba(0,0,0,0.2);
+                border-radius:16px;" name="captcha" id="captcha" placeholder="请输入验证码" onfocus="this.style.color='white'" autocomplete="off" class="layui-input admin-input admin-input-verify">
+      </div>
+        <canvas id="canvas" style=" background-color:rgba(255,255,255,0.8);margin-right:10px;float: right; display: inline-block; cursor: pointer;" width="100" height="43" class="admin-captcha"></canvas>
+    </div>
+    <div class="layui-form-item" style="color: whitesmoke">
+      <h4>你的身份————————————</h4>
+      <div class="layui-input-block" style="color: whitesmoke">
+
+        <input type="radio"  style="background-color:transparent ;border-right:2px solid rgba(255,255,255,0.3) ;border-bottom:2px solid rgba(255,255,255,0.3);box-shadow:inset 2px 2px 2px rgba(0,0,0,0.2);
+                border-radius:16px;" name="character"  value="用户" title="用户" id="user"checked>
+        <input type="radio"  style="background-color:transparent ;border-right:2px solid rgba(255,255,255,0.3) ;border-bottom:2px solid rgba(255,255,255,0.3);box-shadow:inset 2px 2px 2px rgba(0,0,0,0.2);
+                border-radius:16px;" name="character"  value="管理员" title="管理员" id="administrator" >
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <div class="layui-input-block">
+        <input type="button" style="margin-left: -35%" class="layui-btn layui-btn-radius" onclick="msubmitclicked()" id="msubmit" value="立即提交">
+        <button type="reset"  class="layui-btn layui-btn-radius layui-btn-primary">重置</button>
+      </div>
+    </div>
+    <div class="layui-form-item" style="color: black">
+      <a href="register.html" style="color: #e0fcfb">没有账号？点此注册</a>
+
+    </div>
+
+  </form>
+</div>
+
+</div>
+</body>
+<script type="text/javascript" src="js/jquery-1.11.3.js"> </script>
+<script>
+  //Demo
+
+    var show_num = [];
+    draw(show_num);
+
+    $("#canvas").on('click',function(){
+      draw(show_num);
+    })
+
+  function draw(show_num) {
+    var canvas_width=$('#canvas').width();
+    var canvas_height=$('#canvas').height();
+    var canvas = document.getElementById("canvas");//获取到canvas的对象，演员
+    var context = canvas.getContext("2d");//获取到canvas画图的环境，演员表演的舞台
+    canvas.width = canvas_width;
+    canvas.height = canvas_height;
+    var sCode = "A,B,C,E,F,G,H,J,K,L,M,N,P,Q,R,S,T,W,X,Y,Z,1,2,3,4,5,6,7,8,9,0";
+    var aCode = sCode.split(",");
+    var aLength = aCode.length;//获取到数组的长度
+
+    for (var i = 0; i <= 3; i++) {
+      var j = Math.floor(Math.random() * aLength);//获取到随机的索引值
+      var deg = Math.random() * 30 * Math.PI / 180;//产生0~30之间的随机弧度
+      var txt = aCode[j];//得到随机的一个内容
+      show_num[i] = txt.toLowerCase();
+      var x = 10 + i * 20;//文字在canvas上的x坐标
+      var y = 20 + Math.random() * 8;//文字在canvas上的y坐标
+      context.font = "bold 23px 微软雅黑";
+
+      context.translate(x, y);
+      context.rotate(deg);
+
+      context.fillStyle = randomColor();
+      context.fillText(txt, 0, 0);
+
+      context.rotate(-deg);
+      context.translate(-x, -y);
+    }
+    for (var i = 0; i <= 5; i++) { //验证码上显示线条
+      context.strokeStyle = randomColor();
+      context.beginPath();
+      context.moveTo(Math.random() * canvas_width, Math.random() * canvas_height);
+      context.lineTo(Math.random() * canvas_width, Math.random() * canvas_height);
+      context.stroke();
+    }
+    for (var i = 0; i <= 30; i++) { //验证码上显示小点
+      context.strokeStyle = randomColor();
+      context.beginPath();
+      var x = Math.random() * canvas_width;
+      var y = Math.random() * canvas_height;
+      context.moveTo(x, y);
+      context.lineTo(x + 1, y + 1);
+      context.stroke();
+    }
+  }
+
+  function randomColor() {//得到随机的颜色值
+    var r = Math.floor(Math.random() * 256);
+    var g = Math.floor(Math.random() * 256);
+    var b = Math.floor(Math.random() * 256);
+    return "rgb(" + r + "," + g + "," + b + ")";
+  }
+
+  layui.use('form', function(){
+    var form = layui.form;
+
+  });
+
+
+  function msubmitclicked()
+  {
+  //  setTimeout("javascript:location.href='UserFirstPage.html'", 0);
+    if(document.getElementById("account").value=="")
+    {
+      alert("用户名不能为空！");
+      return;
+    }
+    if(document.getElementById("password").value=="")
+    {
+      alert("密码不能为空！");
+      return;
+    }
+
+    var murl="http://localhost:8080/";
+    if(document.getElementById("user").checked)
+    {
+      murl += "user";
+    }
+    else
+      murl+="administrator";
+    murl+="/login?";
+    murl+="account=";
+    murl+=document.getElementById("account").value;
+    murl+="&password=";
+    murl+=document.getElementById("password").value;
+    console.log(murl);
+    $.ajax({
+      type: "GET",
+      url: murl,
+      success: function(data) {
+        if (data != "") {
+          console.log(document.getElementById("captcha").value)
+          var val = document.getElementById("captcha").value.toLowerCase();
+          var num = show_num.join("");
+
+          if(document.getElementById("user").checked)
+          {
+            if(val==''){
+              alert('请输入验证码！');
+            }else if(val == num){
+              //alert('登录成功！');
+              $("captcha").val('');
+              draw(show_num);
+              let parm1=JSON.stringify(data);
+              localStorage.setItem('data',parm1);
+              location.href="UserFirstPage.html"
+
+            }else{
+              alert('验证码错误！请重新输入！');
+              $("captcha").val('');
+              draw(show_num);
+            }
+
+          }
+          else
+          {
+            if(val==''){
+              alert('请输入验证码！');
+            }else if(val == num){
+              //alert('登录成功！');
+              $("captcha").val('');
+              draw(show_num);
+              let parm2=JSON.stringify(data);
+              localStorage.setItem('data',parm2);
+              location.href='AdminFirstPage.html'
+
+            }else{
+              alert('验证码错误！请重新输入！');
+              $("captcha").val('');
+              draw(show_num);
+            }
+          }
+
+
+      }
+        else
+          alert("用户不存在或密码错误！");
+      }
+    });
+
+  }
+</script>
+
+</html>

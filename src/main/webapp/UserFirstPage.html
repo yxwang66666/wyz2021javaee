@@ -1,0 +1,538 @@
+
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="shortcut icon" href="img/bookico.ico" type="image/x-ico" />
+    <title>图书管理系统 - 用户端</title>
+    <link rel="stylesheet" href="style1.css">
+    <link rel="stylesheet" href="https://www.layuicdn.com/layui-v2.5.4/css/layui.css" media="all">
+    <script src="https://www.layuicdn.com/layui-v2.5.4/layui.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+</head>
+<script>
+    var par=localStorage.getItem('data');
+    var params=JSON.parse(par);
+    //console.log(params.account);
+</script>
+<body class="layui-layout-body" style="overflow-y:scroll">
+
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">图书管理系统</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item layui-this"><a href="UserFirstPage.html">首页</a></li>
+            <li class="layui-nav-item"><a href="UserPage/book/book_show.html">图书信息</a></li>
+            <li class="layui-nav-item"><a href="UserPage/user/user_show.html">用户</a></li>
+
+        </ul>
+
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item "style="margin-right: 15px">
+                欢迎您
+            </li>
+            <li class="layui-nav-item">
+
+                    <img src="img/1.jpg" class="layui-nav-img">
+                    <script>
+                        document.write(params.account);
+                    </script>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="UserPage/user/user_show.html">基本资料</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="logout.html">注销</a></li>
+        </ul>
+    </div>
+
+
+
+    <div class="content">
+        <!-- 内容主体区域 -->
+        <div class="banner" id="banner">
+            <!-- 背景 -->
+            <div id="banner_bg" class="bg"></div>
+            <!-- 图片区域 -->
+            <section>
+                <!-- 图片显示 -->
+                <div id="banner_picture" class="picture">
+                    <!-- 图片链接 -->
+                    <a id="banner_link" href="#" class="link">
+                        <!-- 图片标签 -->
+                        <img id="banner_image" class="image" src="" alt="">
+                    </a>
+                </div>
+                <!-- 当前选择指示点 -->
+                <div id="banner_select" class="select"></div>
+                <!-- 左侧翻页 -->
+                <div id='banner_bt_left' class="bt left">
+                    <!-- 字体图标：左箭头 -->
+                    <i class="iconfont icon-Left"></i>
+                </div>
+                <!-- 右侧翻页 -->
+                <div id='banner_bt_right' class="bt right">
+                    <!-- 字体图标：右箭头 -->
+                    <i class="iconfont icon-Right"></i>
+                </div>
+            </section>
+        </div>
+
+        <script>
+
+            /* ******************
+             *  通用变量
+             * ******************/
+
+            // 当前轮播图编号
+            let currentIndex = -1;
+            // 自动翻转定时器
+            let bannerTimer = null;
+
+            /* ******************
+             *  轮播图的图片地址与链接信息
+             * ******************/
+
+            let links = [
+                { 'image': 'img/firstPage/1.jpg', 'target': "UserFirstPage.html" },
+                { 'image': 'img/firstPage/2.jpg', 'target': 'UserPage/book/book_show.html' },
+                { 'image': 'img/firstPage/3.jpg', 'target': 'UserPage/user/user_show.html' },
+            ];
+
+            /* ******************
+             *  找到要操作的元素
+             * ******************/
+
+            let banner = document.getElementById('banner');
+            let bannerBG = document.getElementById('banner_bg');
+            let bannerPicture = document.getElementById('banner_picture');
+            let bannerLink = document.getElementById('banner_link');
+            let bannerImage = document.getElementById('banner_image');
+            let bannerSelect = document.getElementById('banner_select');
+            let bannerBTLeft = document.getElementById('banner_bt_left');
+            let bannerBTRight = document.getElementById('banner_bt_right');
+
+            /* ******************
+             *  轮播图选择动作方法
+             * ******************/
+
+            // 选择
+            // index 为编号 从0开始
+            let select = (index) => {
+
+                // 停止自动播放
+                banner_stop();
+
+                // 转数字
+                index = Number(index);
+
+                // 越界超过 最大数量 links越界，直接返回
+                if (index >= links.length) {
+                    return;
+                }
+
+                // 选中当前已选中的的直接返回
+                if (currentIndex == index) {
+                    return;
+                }
+
+                // 取消当前的指示点选中状态
+                if (currentIndex > -1) {
+                    bannerSelect.children[currentIndex].classList.remove('checked');
+                }
+
+                // 变更当前轮播图编号
+                currentIndex = index;
+
+                // 找到当前元素
+                currentLink = links[currentIndex];
+                // 背景变化
+                bannerBG.style.backgroundImage = 'url(' + currentLink.image + ')';
+                // 前景变化
+                bannerImage.setAttribute('src', currentLink.image);
+                // 链接变化
+                bannerLink.setAttribute('href', currentLink.target);
+
+                // 增加新的指示点选中状态
+                bannerSelect.children[currentIndex].classList.add('checked');
+
+            }
+
+            // 选择（自动）
+            // index 为编号 从0到links.length - 1
+            let auto_select = (index) => {
+
+                // 转数字
+                index = Number(index);
+
+                // 越界超过 最大数量 links越界，直接返回
+                if (index >= links.length) {
+                    return;
+                }
+
+                // 选中当前已选中的的直接返回
+                if (currentIndex == index) {
+                    return;
+                }
+
+                // 取消当前的指示点选中状态
+                bannerSelect.children[currentIndex].classList.remove('checked');
+
+                // 变更当前轮播图编号
+                currentIndex = index;
+
+                // 找到当前元素
+                currentLink = links[currentIndex];
+
+                // 前景图片，第一步调整过度时间为1s
+                bannerImage.style.transition = 'opacity 0.5s ease-in 0s';
+                // 前景图片，第二步调整不透明度到0.2
+                bannerImage.style.opacity = 0.2;
+
+                // 第三步延迟变换img图片，并重新定义透明度以及过度时间和过渡方式
+                setTimeout(() => {
+                    // 背景变化
+                    bannerBG.style.backgroundImage = 'url(' + currentLink.image + ')';
+                    // 前景变化
+                    bannerImage.setAttribute('src', currentLink.image);
+                    // 链接变化
+                    bannerLink.setAttribute('href', currentLink.target);
+                    // 不透明度变化
+                    bannerImage.style.transition = 'opacity 0.5s ease-out 0s';
+                    bannerImage.style.opacity = 1;
+
+                    // 增加新的指示点选中状态
+                    // 如果已经通过手动点击了选中则此处不再执行
+                    if (!document.querySelector('.banner .checked')) {
+                        bannerSelect.children[currentIndex].style.transition = 'background-color .5s';
+                        bannerSelect.children[currentIndex].classList.add('checked');
+                    }
+                }, 500);
+
+            }
+
+            /* ******************
+            *  自动翻转播放与停止
+            * ******************/
+
+            // 播放
+            let banner_play = () => {
+                // 3000 执行1次，这里与右翻逻辑一致
+                bannerTimer = setInterval(() => {
+                    // 获取新的index
+                    let index = currentIndex + 1;
+                    // 右翻越界等于最左侧元素
+                    if (index >= links.length) {
+                        index = 0;
+                    }
+                    // 加载新图片（这里选择自动，增加切换效果）
+                    auto_select(index);
+                }, 3000);
+            }
+
+            // 停止
+            let banner_stop = () => {
+                if (bannerTimer) {
+                    clearInterval(bannerTimer);
+                    bannerTimer = null;
+                }
+            }
+
+            /* ******************
+            *  页面初始化方法
+            * ******************/
+
+            let init = () => {
+
+                // 动态生成选择指示点
+                for (let index = 0; index < links.length; index++) {
+                    // 创建A元素
+                    let item = document.createElement('a');
+                    // 修改属性
+                    item.setAttribute('class', 'item');
+                    item.setAttribute('href', '#');
+                    item.setAttribute('data-index', index);
+                    // 追加元素
+                    bannerSelect.appendChild(item);
+                }
+
+                // 选择第一个元素显示
+                select(0);
+
+                // 绑定事件
+                bind();
+
+                // 自动翻转播放
+                banner_play();
+            }
+
+            /* ******************
+             * 事件绑定方法
+             * ******************/
+
+            let bind = () => {
+
+                // 左翻页事件监听
+                bannerBTLeft.addEventListener('click', () => {
+                    // 获取新的index
+                    let index = currentIndex - 1;
+                    // 左翻越界等于最右元素
+                    if (index < 0) {
+                        index = links.length - 1;
+                    }
+                    // 加载新图片
+                    select(index);
+                });
+
+                // 右翻页事件监听
+                bannerBTRight.addEventListener('click', () => {
+                    // 获取新的index
+                    let index = currentIndex + 1;
+                    // 右翻越界等于最左侧元素
+                    if (index >= links.length) {
+                        index = 0;
+                    }
+                    // 加载新图片
+                    select(index);
+                });
+
+                // 绑定select选择指示点的点击事件
+                for (const key in bannerSelect.children) {
+                    if (bannerSelect.children.hasOwnProperty(key)) {
+                        const element = bannerSelect.children[key];
+                        element.addEventListener('click', function (e) {
+                            // 取消点击跳转
+                            e.preventDefault();
+                            // 跳转到当前指示点中data-index所指定的图片
+                            select(e.target.dataset.index);
+                        });
+                    }
+                }
+
+                // 绑定鼠标移入事件
+                banner.addEventListener('mouseover', (e) => {
+                    // 防止鼠标从子元素移出时触发
+                    if (e.relatedTarget && banner.compareDocumentPosition(e.relatedTarget) == 10) {
+                        banner_stop();
+                    }
+                });
+
+                // 绑定鼠标移出事件
+                banner.addEventListener('mouseout', (e) => {
+                    // 防止鼠标从子元素移出时触发
+                    if (e.relatedTarget && banner.compareDocumentPosition(e.relatedTarget) == 10) {
+                        banner_play();
+                    }
+                });
+
+                // 绑定鼠标移动事件
+                banner.addEventListener('mousemove', (e) => {
+                    banner_stop();
+                });
+
+            }
+
+            /* ******************
+             *  页面加载
+             * ******************/
+
+            // 页面加载完毕
+            window.addEventListener('load', () => {
+                // 初始化方法
+                init();
+            });
+
+
+
+        </script>
+    </div>
+    <div>
+        <div style="margin-top: 10px;padding: 15px">
+            <h1></h1>
+            <div class="container">
+                <style>
+                    .container
+                    {
+                        position: relative;
+                        width: 1200px;
+                        display: flex;
+                        flex-wrap: wrap;
+                        justify-content: space-around;
+                    }
+                    .container .box
+                    {
+                        position: relative;
+                        width:500px;
+                        height: 500px;
+                        margin: 20px 0;
+                        box-sizing:border-box;
+                        overflow: hidden;
+                    }
+                    .container .box .imgBx
+                    {
+                        position: absolute;
+                        top:0;
+                        left:0;
+                        width:100%;
+                        height: 100%;
+                        background: #000;
+                        clip-path: circle(400px at center 100px);
+                        transition: 0.5s;
+                        transition-delay: 0.5s;
+                    }
+                    .container .box:hover .imgBx
+                    {
+                        clip-path: circle(80px at center 100px);
+                        transition-delay: 0s;
+                    }
+                    .container .box:hover .imgBx img
+                    {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                    }
+                    .container .box .content
+                    {
+                        position:absolute;;
+                        left:0;
+                        bottom:0;
+                        width:100%;
+                        height:55%;
+                        padding: 20px;
+                        box-sizing: border-box;
+                        text-align: center;
+                    }
+                    .container .box .content h2
+                    {
+                        margin:0;
+                        padding: 0;
+                    }
+                    .container .box .content a
+                    {
+                        text-decoration: none;
+                        background: #000;
+                        color:#fff;
+                        padding:5px;
+                        display: inline-block;
+                    }
+                    .container .box .content h2,
+                    .container .box .content p,
+                    .container .box .content a
+                    {
+                        opacity: 0;
+                        transition: 0.5s;
+                        transform: translateY(20px);
+                    }
+                    .container .box:hover .content h2
+                    {
+                        opacity: 1;
+                        transform: translateY(0px);
+                        transition-delay: 0.5s;
+                    }
+                    .container .box:hover .content p
+                    {
+                        opacity: 1;
+                        transform: translateY(0px);
+                        transition-delay: 0.7s;
+                    }
+                    .container .box:hover .content a
+                    {
+                        opacity: 1;
+                        transform: translateY(0px);
+                        transition-delay: 0.9s;
+                    }
+                    img
+                    {
+                        width:500px;
+                        height: 500px;
+                    }
+                </style>
+                <div class="box">
+                    <div class="imgBx">
+                        <img src="img/img2.jpg">
+                    </div>
+                    <div class="content">
+                        <h2>老舍的平民生活
+                        </h2>
+                        <p>在中国现代作家中，老舍是十分特殊的一个，与那些出身书香门第、豪门大户、小康家庭的作家不同，他是从北京的小胡同、贫困的大杂院里走出来的平民作家。本书图文并茂地展现了老舍的平民生活，内容详实而全面，是全面了解老舍的好书。
+                        </p>
+                        <a href="https://book.douban.com/subject/1732140/">更多
+                        </a>
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="imgBx">
+                        <img src="img/img3.jpg">
+                    </div>
+                    <div class="content">
+                        <h2>围城
+                        </h2>
+                        <p>《围城》是一幅栩栩如生的世井百态图，人生的酸甜苦辣千般滋味均在其中得到了淋漓尽致的体现。钱钟书先生将自己的语言天才并入极其渊博的知识，再添加上一些讽刺主义的幽默调料，以一书而定江山。《围城》显示给我们一个真正的聪明人是怎样看人生，又怎样用所有作家都必得使用的文字来表述自己的“观”和“感”的。
+                        </p>
+                        <a href="https://book.douban.com/subject/11524204/">更多
+                        </a>
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="imgBx">
+                        <img src="img/img4.jpg">
+                    </div>
+                    <div class="content">
+                        <h2>城南旧事
+                        </h2>
+                        <p>从小说到电影，从成人书到儿童绘本，《城南旧事》是故事、是梦幻，读时仿若音乐，轻轻扣动人心，字里行间所隐涵的深意，更令人撼动，久久不能自已。
+                        </p>
+                        <a href="https://book.douban.com/subject/26888402/">更多
+                        </a>
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="imgBx">
+                        <img src="img/img5.jpg">
+                    </div>
+                    <div class="content">
+                        <h2>骆驼祥子
+                        </h2>
+                        <p>《骆驼祥子》是人民艺术家——老舍（舒庆春，1899-1966）所著的长篇小说，描述了20世纪20年代军阀混战时期人力车夫的悲惨命运。祥子是旧社会劳苦大众的代表人物。
+                        </p>
+                        <a href="https://book.douban.com/subject/4275017/">更多
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="footer" style="
+            clear:both;
+            width:100%;
+            //height:58px;
+            height:37px;   /* footer的高度一定要是固定值*/
+            position:relative;
+            bottom:0px;
+            margin:0 auto;
+            text-indent:0;
+            text-align:center;
+            background:rgb(238,238,238) repeat-x;
+            ">
+    <!-- 底部固定区域 -->
+
+    © Copyright 2021    &nbsp;&nbsp;&nbsp;&nbsp;<a href="" style="color: #185582">网站说明</a>    &nbsp;&nbsp;&nbsp;&nbsp;<a href="" style="color: #185582">友情链接</a>
+</div>
+</div>
+
+<script>
+    //JavaScript代码区域
+    layui.use('element', function(){
+        var element = layui.element;
+
+    });
+</script>
+</body>
+</html>

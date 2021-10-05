@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    private String barCode;
+    private String title;
+    private String author;
+    private String publisher;
+    private String ISBN;
+    private float  price;
+    private String introduction;
+-->
+
+<mapper namespace="com.example.bookmanagementsystem.mapper.BookMapper">
+    <select id="selectAll"
+            resultType="com.example.bookmanagementsystem.bean.Book">
+        select *
+        from book, barCode
+        where book.ISBN = barCode.ISBN
+    </select>
+
+    <select id="selectBarCode"
+            resultType="String">
+        select barCode
+        from barCode
+        where barCode.ISBN = #{isbn} and
+              barCode.isBorrowed = 0
+    </select>
+
+    <select id="selectAllISBN"
+            resultType="com.example.bookmanagementsystem.bean.BookKind">
+        select title, author, publisher, barCode.isbn, price, introduction, image, count(*), 0
+        from book, barCode
+        where book.ISBN = barCode.ISBN and
+              barCode.isBorrowed = 0
+        group by barCode.isbn
+    </select>
+
+    <select id="selectAllISBN2"
+            resultType="com.example.bookmanagementsystem.bean.BookKind">
+        select title, author, publisher, barCode.isbn, price, introduction, image, 0, count(*)
+        from book, barCode
+        where book.ISBN = barCode.ISBN
+        group by barCode.isbn
+    </select>
+
+    <select id="selectByBarCode"
+            resultType="com.example.bookmanagementsystem.bean.Book">
+        select *
+        from book, barCode
+        where book.ISBN = barCode.ISBN and
+              barCode = #{barCode}
+    </select>
+
+    <select id="select2" resultType="com.example.bookmanagementsystem.bean.Book">
+        select *
+        from book, barCode
+        <where>
+            book.ISBN = barCode.ISBN
+            <if test="title != null">
+                and title like concat('%',#{title},'%')</if>
+            <if test="author != null">
+                and author like concat('%',#{author},'%')</if>
+            <if test="publisher != null">
+                and publisher like concat('%',#{publisher},'%')</if>
+            <if test="isbn != null">
+                and barCode.ISBN like concat('%',#{isbn},'%')</if>
+        </where>
+        <if test="title != null">
+            order by length(title)
+        </if>
+    </select>
+
+    <!--
+    public BookKind(String title, String author, String publisher, String isbn,
+     Float price, String introduction,String image, Integer num)
+    -->
+    <select id="select" resultType="com.example.bookmanagementsystem.bean.BookKind">
+        select title, author, publisher, barCode.isbn, price, introduction, image, count(*), 0
+        from book, barCode
+        <where>
+            book.ISBN = barCode.ISBN
+            and barCode.isBorrowed = 0
+            <if test="title != null">
+                and title like concat('%',#{title},'%')</if>
+            <if test="author != null">
+                and author like concat('%',#{author},'%')</if>
+            <if test="publisher != null">
+                and publisher like concat('%',#{publisher},'%')</if>
+            <if test="isbn != null">
+                and barCode.isbn like concat('%',#{isbn},'%')</if>
+        </where>
+        group by barCode.isbn
+        <if test="title != null">
+            order by length(title)
+        </if>
+    </select>
+
+    <select id="select3" resultType="com.example.bookmanagementsystem.bean.BookKind">
+        select title, author, publisher, barCode.isbn, price, introduction, image, 0, count(*)
+        from book, barCode
+        <where>
+            book.ISBN = barCode.ISBN
+            <if test="title != null">
+                and title like concat('%',#{title},'%')</if>
+            <if test="author != null">
+                and author like concat('%',#{author},'%')</if>
+            <if test="publisher != null">
+                and publisher like concat('%',#{publisher},'%')</if>
+            <if test="isbn != null">
+                and barCode.isbn like concat('%',#{isbn},'%')</if>
+        </where>
+        group by barCode.isbn
+        <if test="title != null">
+            order by length(title)
+        </if>
+    </select>
+
+    <insert id="insertBook">
+        insert into book values (
+            #{isbn}, #{title}, #{author}, #{publisher}, #{price}, #{introduction}, #{image}
+        )
+    </insert>
+
+    <insert id="insertBarCode">
+        insert into barCode values (
+            #{barCode}, #{isbn}, false
+        )
+    </insert>
+
+    <update id="update">
+        update book
+        <set>
+            <if test="title != null">
+                title = #{title},
+            </if>
+            <if test="author != null">
+                author = #{author},
+            </if>
+            <if test="publisher != null">
+                publisher = #{publisher},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="introduction != null">
+                introduction = #{introduction},
+            </if>
+            <if test="image!=null">
+                image = #{image},
+            </if>
+        </set>
+        where ISBN = #{isbn}
+    </update>
+
+    <update id="updateIsBorrowed">
+        update barCode
+        <set>
+            isBorrowed = #{isBorrowed}
+        </set>
+        where barCode = #{barCode}
+    </update>
+
+    <delete id="deleteByBarCode">
+        delete from barCode where barCode = #{barCode}
+    </delete>
+
+    <delete id="deleteByISBN">
+        delete from book where ISBN = #{isbn}
+    </delete>
+
+</mapper>

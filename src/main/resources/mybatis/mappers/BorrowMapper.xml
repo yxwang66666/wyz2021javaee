@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    private String userAccount;
+    private String bookBarCode;
+    @Column(name = "borrowDate")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date borrowDate;
+    private Integer days=30;
+-->
+
+<mapper namespace="com.example.bookmanagementsystem.mapper.BorrowMapper">
+    <select id="selectAll"
+            resultType="com.example.bookmanagementsystem.bean.BorrowRecord">
+        select userAccount,bookBarCode,book.title,borrowDate,days
+        from borrowRecord,barcode,book
+        where
+            borrowRecord.bookBarCode=barCode.barCode and
+            barCode.ISBN=book.ISBN
+    </select>
+
+    <select id="selectByAccount"
+            resultType="com.example.bookmanagementsystem.bean.BorrowRecord">
+        select userAccount,bookBarCode,book.title,borrowDate,days
+        from borrowRecord,barcode,book
+        where
+            borrowRecord.bookBarCode=barCode.barCode and
+            barCode.ISBN=book.ISBN and
+            userAccount = #{userAccount}
+    </select>
+
+    <select id="selectByAccountAndBarCode"
+            resultType="com.example.bookmanagementsystem.bean.BorrowRecord">
+        select userAccount,bookBarCode,book.title,borrowDate,days
+        from borrowRecord,barcode,book
+        where
+            borrowRecord.bookBarCode=barCode.barCode and
+            barCode.ISBN=book.ISBN and
+            userAccount = #{userAccount} and
+            bookBarCode = #{bookBarCode}
+    </select>
+
+    <insert id="insert">
+        insert into borrowRecord values (
+            #{userAccount}, #{bookBarCode}, #{borrowDate}, #{days}
+        )
+    </insert>
+
+    <update id="renew">
+        update borrowRecord
+        <set>
+            days = days + #{day},
+        </set>
+        where userAccount = #{userAccount} and bookBarCode = #{bookBarCode}
+    </update>
+
+    <delete id="delete">
+        delete from borrowRecord where userAccount = #{userAccount} and bookBarCode = #{bookBarCode}
+    </delete>
+
+</mapper>

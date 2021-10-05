@@ -1,0 +1,287 @@
+
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="shortcut icon" href="../../img/bookico.ico" type="image/x-ico" />
+    <title>图书管理系统 - 管理员端</title>
+
+    <link rel="stylesheet" href="https://www.layuicdn.com/layui-v2.5.4/css/layui.css" media="all">
+    <script src="https://www.layuicdn.com/layui-v2.5.4/layui.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+</head>
+<script>
+    var par=localStorage.getItem('data');
+    var params=JSON.parse(par);
+    //console.log(params.account);
+</script>
+<body class="layui-layout-body">
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">图书管理系统</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item "><a href="../../AdminFirstPage.html">首页</a></li>
+            <li class="layui-nav-item "><a href="../book/book_show.html">图书管理</a></li>
+            <li class="layui-nav-item layui-this"><a href="../user/user_show.html">用户管理</a></li>
+
+        </ul>
+
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="../../../img/1.jpg" class="layui-nav-img">
+                    <script>
+                        document.write(params.account);
+                    </script>
+                </a>
+
+            </li>
+            <li class="layui-nav-item"><a href="../../logout.html">注销</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+                <li class="layui-nav-item ">
+                    <a class="" href="javascript:;">图书信息</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="../book/book_show.html">图书展示</a></dd>
+                        <dd ><a href="../book/book_stastic.html">图书统计</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item  ">
+                    <a href="javascript:;">用户信息</a>
+                    <dl class="layui-nav-child ">
+                        <dd ><a href="../user/user_show.html">所有用户</a></dd>
+                        <dd><a href="../borrow/borrow_show.html">当前借阅</a></dd>
+                        <dd><a href="../borrow/return_show.html">借阅历史</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;">违约信息</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="default_show.html">所有违约</a></dd>
+                        <dd class="layui-this"><a href="default_stastic.html">违约统计</a></dd>
+
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body" style="padding: 15px">
+        <!-- 内容主体区域 -->
+        <h1>违约统计</h1>
+        <div   style="padding:15px">
+            <label>借阅人   :</label>
+            <input type="text" id="searchAccount"style="height:25px" placeholder="请输入需要查询的账号">
+            <button class="layui-btn layui-inline" id="go">搜索</button>
+        </div>
+        <div id="main" style="width: 900px;height:600px;"></div>
+
+    </div>
+    <script type="text/javascript" >
+        var p ;
+        var finecount;
+        var returncount;
+        $.ajax({
+            url: 'http://localhost:8080/fine/selectAll',
+            type: 'GET',
+            async: false,
+            //data:'total',
+            dataType: 'json',
+            data: {page: 1, limit: 8},
+            success: function (res) {
+                finecount = res.total;
+                console.log(res.total);
+            }
+        })
+        $.ajax({
+            url: 'http://localhost:8080/return/selectAll',
+            type: 'GET',
+            async: false,
+            //data:'total',
+            dataType: 'json',
+            data: {page: 1, limit: 8},
+            success: function (res) {
+                returncount = res.total;
+                console.log(res.total);
+            }
+        })
+        if((Number(returncount))!=0) {
+            p = (finecount / returncount * 100).toFixed(2);
+        }
+        else
+        {
+            p=0;
+        }
+        parseFloat(p);
+        console.log(p);
+        var myChart = echarts.init(document.getElementById('main'));
+        var option = {
+            tooltip: {
+                formatter: '{a} <br/>{b} : {c}%'
+            },
+            toolbox: {
+                feature: {
+                    restore: {},
+                    saveAsImage: {}
+                }
+            },
+            series: [
+                {
+                    name: '违约情况',
+                    type: 'gauge',
+                    detail: {formatter: '{value}%'},
+                    data: [{value: p, name: '总违约率'}]
+                }
+            ]
+        };
+        myChart.setOption(option);
+        $('#go').on('click', function () {
+            var account = $('#searchAccount').val();
+            if (account != "") {
+                $.ajax({
+                    url: 'http://localhost:8080/fine/selectByAccount',
+                    type: 'GET',
+                    async: false,
+                    //data:'total',
+                    dataType: 'json',
+                    data: {userAccount:account,page: 1, limit: 8},
+
+                    success: function (res) {
+                        finecount = res.total;
+                        console.log(res.total);
+                    }
+                })
+                $.ajax({
+                    url: 'http://localhost:8080/return/selectByAccount',
+                    type: 'GET',
+                    async: false,
+                    //data:'total',
+                    dataType: 'json',
+                    data: {userAccount:account,page: 1, limit: 8},
+
+                    success: function (res) {
+                        returncount = res.total;
+                        console.log(res.total);
+                    }
+                })
+                if((Number(returncount))!=0) {
+                    p = (finecount / returncount * 100).toFixed(2);
+                }
+                else
+                {
+                    p=0;
+                }
+                //parseFloat(p);
+                console.log(p);
+                var myChart = echarts.init(document.getElementById('main'));
+                var option = {
+                    tooltip: {
+                        formatter: '{a} <br/>{b} : {c}%'
+                    },
+                    toolbox: {
+                        feature: {
+                            restore: {},
+                            saveAsImage: {}
+                        }
+                    },
+                    series: [
+                        {
+                            name: '违约情况',
+                            type: 'gauge',
+                            detail: {formatter: '{value}%'},
+                            data: [{value: p, name:account+ '的违约率'}]
+                        }
+                    ]
+                };
+            }
+            else {
+                $.ajax({
+                    url: 'http://localhost:8080/fine/selectAll',
+                    type: 'GET',
+                    async: false,
+                    //data:'total',
+                    dataType: 'json',
+                    data: {page: 1, limit: 8},
+                    success: function (res) {
+                        finecount = res.total;
+                        console.log(res.total);
+                    }
+                })
+                $.ajax({
+                    url: 'http://localhost:8080/return/selectAll',
+                    type: 'GET',
+                    async: false,
+                    //data:'total',
+                    dataType: 'json',
+                    data: {page: 1, limit: 8},
+                    success: function (res) {
+                        returncount = res.total;
+                        console.log(res.total);
+                    }
+                })
+                if((Number(returncount))!=0) {
+                    p = (finecount / returncount * 100).toFixed(2);
+                }
+                else
+                {
+                    p=0;
+                }
+                parseFloat(p);
+                console.log(p);
+                var myChart = echarts.init(document.getElementById('main'));
+                var option = {
+                    tooltip: {
+                        formatter: '{a} <br/>{b} : {c}%'
+                    },
+                    toolbox: {
+                        feature: {
+                            restore: {},
+                            saveAsImage: {}
+                        }
+                    },
+                    series: [
+                        {
+                            //id:account,
+                            name: '违约情况',
+                            type: 'gauge',
+                            detail: {formatter: '{value}%'},
+                            data: [{value: p, name: '总违约率'}]
+                        }
+                    ]
+                };
+            }
+            myChart.setOption(option);
+        });
+    </script>
+
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © Copyright 2020-2020    &nbsp;&nbsp;&nbsp;&nbsp;<a href="" style="color: #185582">网站说明</a>    &nbsp;&nbsp;&nbsp;&nbsp;<a href="" style="color: #185582">友情链接</a>
+    </div>
+</div>
+
+
+<script>
+
+    //JavaScript代码区域
+    layui.use('element', function(){
+        var element = layui.element;
+
+    });
+
+
+</script>
+</body>
+</html>

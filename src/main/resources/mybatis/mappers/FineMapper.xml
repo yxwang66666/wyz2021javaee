@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    private Date fineDate;
+    private int amount;
+    private String account;
+-->
+
+<mapper namespace="com.example.bookmanagementsystem.mapper.FineMapper">
+    <select id="selectAll"
+            resultType="com.example.bookmanagementsystem.bean.FineRecord">
+        select fineDate, amount, userAccount
+        from FineRecord
+    </select>
+
+    <select id="selectByAccount" resultType="com.example.bookmanagementsystem.bean.FineRecord">
+        select  fineDate, amount, userAccount
+        from fineRecord
+        where userAccount = #{userAccount}
+    </select>
+
+    <select id="selectByDate"
+            resultType="com.example.bookmanagementsystem.bean.FineRecord">
+        select fineDate, amount, userAccount
+        from finerecord
+        where
+        <if test="startDate != null and endDate != null">
+            DATE(fineDate) between DATE(#{startDate}) and DATE(#{endDate})
+        </if>
+        <if test="startDate == null">
+            DATE(fineDate) &lt;= DATE(#{endDate})
+        </if>
+        <if test="endDate == null">
+            DATE(fineDate) >= DATE(#{startDate})
+        </if>
+    </select>
+
+    <select id="selectByDateAndAccount" resultType="com.example.bookmanagementsystem.bean.FineRecord">
+        select fineDate, amount, userAccount
+        from finerecord
+        where
+        <if test="startDate != null and endDate != null">
+            DATE(fineDate) between DATE(#{startDate}) and DATE(#{endDate})
+        </if>
+        <if test="startDate == null">
+            DATE(fineDate) &lt;= DATE(#{endDate})
+        </if>
+        <if test="endDate == null">
+            DATE(fineDate) >= DATE(#{startDate})
+        </if>
+        and userAccount = #{userAccount}
+    </select>
+
+    <insert id="insert">
+        insert into fineRecord(userAccount, fineDate, amount)
+        values (#{userAccount}, #{fineDate}, #{amount});
+    </insert>
+</mapper>

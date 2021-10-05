@@ -1,0 +1,256 @@
+
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="shortcut icon" href="../../img/bookico.ico" type="image/x-ico" />
+    <title>图书管理系统 - 用户端</title>
+
+    <link rel="stylesheet" href="https://www.layuicdn.com/layui-v2.5.4/css/layui.css" media="all">
+    <script src="https://www.layuicdn.com/layui-v2.5.4/layui.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+</head>
+<script>
+    var par=localStorage.getItem('data');
+    var params=JSON.parse(par);
+    //console.log(params.account);
+</script>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">图书管理系统</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item  "><a href="../../UserFirstPage.html">首页</a></li>
+            <li class="layui-nav-item "><a href="../book/book_show.html">图书信息</a></li>
+            <li class="layui-nav-item layui-this"><a href="../user/user_show.html">用户</a></li>
+
+        </ul>
+
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="../../img/1.jpg" class="layui-nav-img">
+                    <script>
+                        document.write(params.account);
+                    </script>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="../user/user_show.html">基本资料</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="../../logout.html">注销</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+                <li class="layui-nav-item ">
+                    <a class="" href="javascript:;">图书信息</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="../book/book_show.html">图书展示</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a href="javascript:;">我的信息</a>
+                    <dl class="layui-nav-child">
+                        <dd  ><a href="../user/user_show.html">我的账号</a></dd>
+                        <dd class="layui-this" ><a href="borrow_show.html">当前借阅</a></dd>
+                        <dd><a href="return_show.html">借阅历史</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item ">
+                    <a class="" href="javascript:;">违约信息</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="../default/default_show.html">我的违约</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style="margin-right: 200px;padding: 15px">
+            <table class="layui-hide" id="allborrows" lay-filter="test"></table>
+        </div>
+
+    </div>
+
+
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © Copyright 2021    &nbsp;&nbsp;&nbsp;&nbsp;<a href="" style="color: #185582">网站说明</a>    &nbsp;&nbsp;&nbsp;&nbsp;<a href="" style="color: #185582">友情链接</a>
+    </div>
+</div>
+<script type="text/html" id="operation">
+    <button class="layui-btn" lay-event="renew">续借</button>
+</script>
+<script>
+    //JavaScript代码区域
+
+    layui.use('element', function(){
+        var element = layui.element;
+
+    });
+    layui.use(['laydate', 'laypage', 'layer', 'table', 'carousel', 'upload', 'element', 'slider'], function(){
+        var table = layui.table;
+        table.render({
+            elem: '#allborrows'
+            ,height: 600
+            ,id: 'borrow'
+            ,url: 'http://localhost:8080/borrow/selectByAccount'
+            ,method:'get'
+
+            //        ,toolbar: 'default'
+            ,totalRow: true //合计行
+            ,page: true //分页
+            ,limit:10
+            ,limits: [3,5,10,20]
+            ,cols: [[ //表头
+                { type:'numbers',title:'序号',width: 50,fixed: 'left'}
+                ,{field: 'bookBarCode',title: '图书编号',width: 140}
+                ,{field: 'title',title: '图书名称',width: 240}
+                //,{field: 'statu',title: '当前状态',width: 120}
+                ,{field: 'borrowDate',title: '借书时间',width: 160}
+                ,{field: 'days',title: '应还时间',width: 160}
+                ,{title:'操作', toolbar: '#operation', width:180}
+                //,{fixed: 'right', width: 165, align:'center', toolbar: '#barDemo'}
+
+            ]]
+            ,where:{
+                //op:'findrecord',
+                userAccount:params.account,
+            }
+            ,parseData: function(res) { //res 即为原始返回的数据
+                //console.log(this.url)
+                console.log(res);
+                if(res.list[0]==null)
+                    return {"code": 0, "msg": "", "count": res.total, "data": []};
+                for (j = 0, len = res.list.length; j < len; j++) {
+                    var d=new Date(res.list[j].borrowDate);
+                    d.setDate(d.getDate()+res.list[j].days);
+                    //console.log(d.getMonth())
+                    res.list[j].days=d;
+                    res.list[j].days=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()
+                    +' '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
+                }
+                return {"code": 0, "msg": "", "count": res.total, "data": res.list};
+            }
+
+        });
+        table.on('tool(test)', function(obj){ //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+            var data = obj.data //获得当前行数据
+                ,layEvent = obj.event; //获得 lay-event 对应的值
+            console.log(obj.event)
+            if(layEvent === 'returnbook'){
+            //if(layEvent === 'returnbook' && data.statu === '正常'){
+                layer.confirm('确定归还此书？', function(index){
+                    /*obj.update({
+                        statu:'待处理'
+                    });*/
+
+                    layer.close(index);
+                    //罚款处理，未调试
+                    var currDate=new Date();
+                    currDate=currDate.getFullYear()+'-'+(currDate.getMonth()+1)+'-'+currDate.getDate()
+                        +' '+currDate.getHours()+':'+currDate.getMinutes()+':'+currDate.getSeconds();
+                    console.log(currDate);
+                    console.log(data.days);
+
+                    var done=false;
+                    if(currDate>data.days)
+                    {
+                        var a1 = Date.parse(new Date(currDate));
+                        var a2 = Date.parse(new Date(data.days));
+                        var dif = parseInt((a1-a2)/ (1000 * 60 * 60 * 24));//核心：时间戳相减，然后除以天数
+
+                        console.log(dif)
+                        layer.confirm('您需要缴纳'+dif*1+'元罚款',function (index1)
+                        {
+                            layer.close(index1);
+                            //向服务端发送归还指令
+                            console.log("yes");
+                            $.ajax({
+                                url: 'http://localhost:8080/return/return',
+                                method: 'get',
+                                data:{userAccount:params.account,bookBarCode:data.bookBarCode},
+
+                                dataType:'text',
+                            })
+
+                            layer.alert('归还成功',function ()
+                            {
+                                location.reload();
+                            });
+                        });
+                    }
+                    else
+                    {
+                        $.ajax({
+                            url: 'http://localhost:8080/return/return',
+                            method: 'get',
+                            data:{userAccount:params.account,bookBarCode:data.bookBarCode},
+
+                            dataType:'text',
+                        })
+
+                        layer.alert('归还成功',function ()
+                        {
+                            location.reload();
+                        });
+
+                    }
+
+                });
+            }else if (layEvent === 'renew') {
+                var curr = new Date()
+                curr = curr.getFullYear() + '-' + (curr.getMonth() + 1) + '-' + curr.getDate()
+                    + ' ' + curr.getHours() + ':' + curr.getMinutes() + ':' + curr.getSeconds()
+                console.log(curr)
+                console.log(data.days)
+                if (curr > data.days) {
+                    layer.alert("已违约，无法续借！", function (index) {
+                        layer.close(index)
+                    })
+                }
+                else {
+
+                    layer.confirm('确定续借30天？', function (index) {
+                        var d = new Date(data.days);
+                        d.setDate(d.getDate() + 30);
+                        //console.log(d.getMonth())
+                        //res.list[j].days=d;
+                        /*res.list[j].days=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()
+                        +' '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();*/
+
+                        obj.update({
+                            days: d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()
+                                + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds()
+                        });
+                        layer.close(index);
+                        //向服务端发送删除指令
+                        $.ajax({
+                            url: 'http://localhost:8080/borrow/renew',
+                            method: 'get',
+                            data: {userAccount: data.userAccount, bookBarCode: data.bookBarCode},
+                            dataType: 'text',
+                        })
+                        //console.log(data);
+                        layer.msg("续借成功！");
+                    });
+                }
+            }
+            else{
+                layer.msg('查无此书')
+
+            }
+        })
+    })
+</script>
+</body>
+</html>

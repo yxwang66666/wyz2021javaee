@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    public String account;
+    public String password;
+    public String nickname;
+    public String telephone;
+    public String email;
+-->
+
+<mapper namespace="com.example.bookmanagementsystem.mapper.AdministratorMapper">
+    <select id="selectAll"
+            resultType="com.example.bookmanagementsystem.bean.Administrator">
+        select * from Administrator
+    </select>
+
+    <select id="selectByAccount"
+            resultType="com.example.bookmanagementsystem.bean.Administrator">
+        select * from Administrator where account=#{account}
+    </select>
+
+    <select id="getPassword"
+            resultType="String">
+        select password from Administrator where account=#{account}
+    </select>
+
+    <insert id="insert">
+        insert into Administrator values (
+            #{account}, #{password}, #{nickname}, #{telephone}, #{email}
+        )
+    </insert>
+
+    <update id="update">
+        update Administrator
+        <set>
+            <if test="password != null">
+                password = #{password},
+            </if>
+            <if test="nickname != null">
+                nickname = #{nickname},
+            </if>
+            <if test="telephone != null">
+                telephone = #{telephone},
+            </if>
+            <if test="email != null">
+                email = #{email},
+            </if>
+        </set>
+        where account = #{account}
+    </update>
+
+    <delete id="deleteByAccount">
+        delete from Administrator where account = #{account}
+    </delete>
+
+</mapper>

@@ -1,0 +1,242 @@
+@font-face {
+    font-family: "iconfont";
+    overflow-y: auto;
+    src: url('data:application/x-font-woff2;charset=utf-8;base64,d09GMgABAAAAAAKUAAsAAAAABmAAAAJJAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHEIGVgCCfgpQYwE2AiQDDAsIAAQgBYRtBzYboQXIrjGFMXYtSYlaOMcguOy7+/WSGRu8A8TD0xrr/ZnZRS1BEo1E0WiSNJFohGKJBLGRAt0zCe52v+nv/mQsYfN8t/yKvW1ncr12p2FrnEYphAThUBQAc9XWl4dsCcZWH2sjJHCl/5/L6U2gs6P57eyc1srGGnblR70A44AC3AujIyuRzFOQ3RGoJT8n0G6MZbR5eH6vlhXOukBcGx2r5VJFUaR+q1C3HC3iWaU1PaaUp/j78S2IZZIqc7buXR1kavvNW1u+bW6dhogqgZ6ukDFPKcRJa2fPREjURHtnapw61rzgrabhTRgTR6UT8dd5/k4wTbuJN75I8NYJCWRQl3udGGHkYAgh6vqGrjG7+bjN8I7+1Xfr4baPuzHuU9vskkIz/eSF+BcjBL2/E24t1lHA6yPlZoHHtO4oG/wUDRwppuFEc9FVX7VzWQ2kElSW8xpOod/v9MgQPExoNTQh12I0h6zVOFrI+Wqlw3X81FqtUGg35+h0hwFsIkobZn0SCL2+IOn2Almvb7SQP1AZ9ge13phAu5MYuLLDZJjVDcZYMIPkDUzaNuTFZTUZvEX9VMVcNGLmEXkwdfAdr9o/wgZ5iR3Dsw5ECIjbGg7Ja1hVLXTcFpiKk4t0C9eltpCctK3Vqg0MxQTKgMQbYKRaDQoni9Xa528h7Uklxj2BhvQRYgMzO/A5PAA9chso8CjvDJ5pASEIIKxVA4dkEapUWqBrX1RAKeHIJ7Q6C647jlDX2T5S/98paOfclyNFjqI6MDqX6RaSKAUA') format('woff2');
+}
+
+.iconfont {
+    font-family            : "iconfont" !important;
+    font-size              : 16px;
+    font-style             : normal;
+    -webkit-font-smoothing : antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* 右箭头 */
+.icon-Right:before {
+    content: "\e608";
+}
+
+/* 左箭头 */
+.icon-Left:before {
+    content: "\e609";
+}
+
+/* 常用模板 */
+:root {
+
+    --border-color    : #7591AD;
+    --text-color      : #34495e;
+    --color1          : #EC3E27;
+    --color2          : #fd79a8;
+    --color3          : #0984e3;
+    --color4          : #00b894;
+    --color5          : #fdcb6e;
+    --color6          : #e056fd;
+    --color7          : #F97F51;
+    --color8          : #BDC581;
+}
+
+html {
+    font-size: 14px;
+    margin   : 0;
+    padding  : 0;
+}
+content {
+    margin          : 0;
+    padding         : 0;
+    overflow-y: auto;
+    display         : flex;
+    justify-content : center;
+    align-items     : center;
+    font-family     : 'Montserrat', sans-serif, Arial, 'Microsoft Yahei';
+}
+
+
+.channel {
+    position   : absolute;
+    width      : 80%;
+    text-align : center;
+    bottom     : 20%;
+    overflow-y: auto;
+    left       : 50%;
+    transform  : translate(-50%, 0px);
+    font-size  : 30px;
+    font-weight: bold;
+    color      : #fff;
+}
+
+/* banner区域 */
+/* 相对定位 */
+/* 宽度100% */
+/* 高度根据section区域自动适应 */
+.banner {
+    position: relative;
+    width   : 100%;
+    top: 0vh;
+    overflow: hidden;
+}
+
+/* 实现背景 */
+/* 绝对定位，让背景浮动起来 */
+/* 宽度和高度200% */
+/* 要在section区域的下方，所以z-index=1 */
+/* 背景图地址要根据前端显示的图片进行变化 */
+/* 透明度变化同时更换背景，1-0.2更换背景-1显示新背景 */
+.banner .bg {
+    position: absolute;
+
+    width : 200%;
+    height: 200%;
+
+    z-index: 1;
+
+    /* background-image   : url(./images/4.jpg); */
+    background-size    : 4000px;
+    background-position: center center;
+
+    filter: blur(20px);
+
+}
+
+/* 内容区域 */
+/* 图片显示区域 */
+/* 选择区域 */
+/* 翻页区域 */
+/* 宽度为100%，最大为990 */
+/* 高度为300px，整个轮播的最大高度 */
+/* margin实现居中 */
+.banner section {
+    position: relative;
+
+    width    : 100%;
+    max-width: 990px;
+    height   : 400px;
+
+    margin: 0 auto;
+
+    /* background-color: #00b894; */
+
+    z-index: 2;
+}
+
+/* 图片区域 */
+/* 等于section区域 */
+.banner section .picture {
+    width : 100%;
+    height: 100%;
+}
+
+/* 图片区域内的图片实用object-fit进行自适应大小裁切 */
+.banner section .picture .image {
+    width : 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+/* 轮播图选择 */
+/* 宽度100%自适应 */
+/* 高度30px */
+/* 利用bottom实现定位 */
+/* 增加一个有透明度控制的背景色 */
+/* 利用text-align=center,line-height=30px居中 */
+.select {
+    position: absolute;
+
+    width : 100%;
+    height: 30px;
+
+    bottom: 30px;
+
+    background-color: #FFFFFF44;
+
+    text-align : center;
+    line-height: 30px;
+}
+
+/* 轮播图选择的元素 */
+/* 初始化时界面上没有，初始化完成后根据数据自动生成 */
+/* 使用inline-block方式显示 */
+/* 高宽都等于10px */
+/* 左右增加10个像素的间距 */
+/* 增加圆角 */
+/* 背景色用白色 */
+/* 增加一个投影 */
+.select .item {
+    display: inline-block;
+
+    width : 10px;
+    height: 10px;
+
+    margin: 0 10px;
+
+    border-radius: 100%;
+
+    background-color: #fff;
+    box-shadow      : 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* 选择元素的鼠标移入样式 */
+.select .item:hover {
+    background-color: #ff4400;
+}
+
+/* 选择元素选中的样式 */
+.select .item.checked {
+    background-color: #ff4400;
+}
+
+/* 左右翻页按钮默认样式 */
+.bt {
+    position: absolute;
+    width : 40px;
+    height: 80px;
+    color: #fff;
+    top      : 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.05);
+    transition      : all 0.3s;
+    display        : flex;
+    justify-content: center;
+    align-items    : center;
+    cursor: pointer;
+    z-index: 3;
+}
+
+.bt.left {
+    left: -60px;
+}
+
+.bt.right {
+    right: -60px;
+}
+
+.bt i {
+    font-size: 40px;
+}
+
+.bt:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+footer{
+    clear:both;
+    width:768px;
+    height:58px;
+    margin:0 auto;
+    text-indent:0;
+    text-align:center;
+    background:#ddf0f9 repeat-x;
+}
+/* 屏幕尺寸小于1110时以下代码生效，目的时让两个按钮移动到图片主体内部，因为当小于1110时 */
+/* 加上图片最大为990，这时候就看不到两侧的按钮了 */
+@media screen and (max-width:1110px) {
+    .bt.left {
+        left: 20px;
+    }
+
+    .bt.right {
+        right: 20px;
+    }
+
+}

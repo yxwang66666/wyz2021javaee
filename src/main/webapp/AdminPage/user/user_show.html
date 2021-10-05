@@ -1,0 +1,531 @@
+
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="shortcut icon" href="../../img/bookico.ico" type="image/x-ico" />
+    <title>图书管理系统 - 管理员端</title>
+
+    <link rel="stylesheet" href="https://www.layuicdn.com/layui-v2.6.8/css/layui.css" media="all">
+    <script src="https://www.layuicdn.com/layui-v2.5.4/layui.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+</head>
+<script>
+    var par=localStorage.getItem('data');
+    var params=JSON.parse(par);
+    //console.log(params.account);
+</script>
+<body class="layui-layout-body">
+
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">图书管理系统</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item "><a href="../../AdminFirstPage.html">首页</a></li>
+            <li class="layui-nav-item "><a href="../book/book_show.html">图书管理</a></li>
+            <li class="layui-nav-item layui-this"><a href="../user/user_show.html">用户管理</a></li>
+
+        </ul>
+
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:">
+                    <img src="../../../img/1.jpg" class="layui-nav-img">
+                    <script>
+                       document.write(params.account);
+                    </script>
+                </a>
+
+            </li>
+            <li class="layui-nav-item"><a href="../../logout.html">注销</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+                <li class="layui-nav-item ">
+                    <a class="" href="javascript:;">图书信息</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="../book/book_show.html">图书展示</a></dd>
+                        <dd ><a href="../book/book_stastic.html">图书统计</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a href="javascript:;">用户信息</a>
+                    <dl class="layui-nav-child">
+                        <dd class="layui-this"><a href="../user/user_show.html">所有用户</a></dd>
+                        <dd><a href="../borrow/borrow_show.html">当前借阅</a></dd>
+                        <dd><a href="../borrow/return_show.html">借阅历史</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item ">
+                    <a class="" href="javascript:;">违约信息</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="../default/default_show.html">所有违约</a></dd>
+                        <dd><a href="../default/default_stastic.html">违约统计</a></dd>
+
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <br/>
+        <div style="padding: 15px;">
+            <h2>用户信息</h2>
+        </div>
+        <div style="margin-right: 210px;padding: 20px">
+            <table class="layui-hide" id="allusers" lay-filter="test"></table>
+        </div>
+    </div>
+
+
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © Copyright 2021    &nbsp;&nbsp;&nbsp;&nbsp;<a href="" style="color: #185582">网站说明</a>    &nbsp;&nbsp;&nbsp;&nbsp;<a href="" style="color: #185582">友情链接</a>
+    </div>
+</div>
+<div style="padding: 15px;display: none" id="userInsert" >
+    <form class="layui-form layui-form-pane" > <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户号</label>
+            <div class="layui-input-inline">
+                <input type="username" name="newaccount" id="newaccount" lay-verify="required"   placeholder="请输入用户名" autocomplete="off" class="layui-input">
+            </div>
+            <i class="layui-icon layui-icon-username" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">密码</label>
+            <div class="layui-input-inline">
+                <input type="password" name="newpassword" id="newpassword" lay-verify="required|pass"  placeholder="请输入密码" autocomplete="off" class="layui-input">
+            </div>
+            <i class="layui-icon layui-icon-password" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">昵称</label>
+            <div class="layui-input-inline">
+                <input type="text" name="newnickname" id="newnickname"lay-verify="required"  placeholder="请输入昵称" autocomplete="off" class="layui-input">
+            </div>
+            <i class="layui-icon layui-icon-star" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">手机号</label>
+            <div class="layui-input-inline">
+                <input type="text" name="newtelephone" id="newtelephone" lay-verify="required|phone" placeholder="请输入电话号" autocomplete="off" class="layui-input">
+            </div>
+            <i class="layui-icon layui-icon-cellphone" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">邮箱</label>
+            <div class="layui-input-inline">
+                <input type="text" name="newemail" id="newemail" lay-verify="required|email"  placeholder="请输入邮箱" autocomplete="off" class="layui-input">
+            </div>
+            <i class="layui-icon layui-icon-email" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" type="button" id="submit"  lay-submit  >立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+<div style="padding: 15px;display: none;margin-left: 30px" id="userUpdate" >
+    <form class="layui-form layui-form-pane" lay-filter="update_filter"> <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">账号</label>
+            <div class="layui-input-inline">
+                <input type="text" name="alteraccount" id="alteraccount" readonly lay-verify="required"   autocomplete="off" class="layui-input layui-disabled">
+            </div>
+            <i class="layui-icon layui-icon-username" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">密码</label>
+            <div class="layui-input-inline">
+                <input type="text" name="alterpassword" id="alterpassword"  readonly lay-verify="required"  autocomplete="off" class="layui-input layui-disabled">
+            </div>
+            <i class="layui-icon layui-icon-password" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">昵称</label>
+            <div class="layui-input-inline">
+                <input type="text" name="alternickname" id="alternickname"lay-verify="required"   autocomplete="off" class="layui-input">
+            </div>
+            <i class="layui-icon layui-icon-star" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">手机号</label>
+            <div class="layui-input-inline">
+                <input type="text" name="altertelephone" id="altertelephone" lay-verify="required|phone"  autocomplete="off" class="layui-input">
+            </div>
+            <i class="layui-icon layui-icon-cellphone" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">邮箱</label>
+            <div class="layui-input-inline">
+                <input type="text" name="alteremail" id="alteremail" lay-verify="required|email"   autocomplete="off" class="layui-input">
+            </div>
+            <i class="layui-icon layui-icon-email" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" type="button" id="update"  lay-submit  >立即提交</button>
+
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript" src="../../js/jquery-1.11.3.js"> </script>
+<script>
+    //JavaScript代码区域
+    layui.use('element', function(){
+        var element = layui.element;
+
+    });
+    layui.use(['laydate', 'laypage', 'layer', 'table', 'carousel', 'upload', 'element', 'slider'], function() {
+        var table = layui.table;
+        var upload = layui.upload;
+        table.render({
+            elem: '#allusers'
+            , height: 600
+            , id: 'user'
+            , url: 'http://localhost:8080/user/selectAll'
+            , method: 'GET'
+
+            , toolbar: 'default'
+            , totalRow: true //合计行
+            , page: true //分页
+            , limit: 10
+            , limits: [3, 5, 10, 20]
+            , cols: [[ //表头
+                {type: 'checkbox', fixed: 'left', width: 60}
+                ,{type:'numbers',title:'序号',width:50}
+                , {field: 'account', title: '账号',style: 'cursor: pointer;', width: 120}
+                , {field: 'password', title: '用户密码', style: 'cursor: pointer;', width: 120}
+                , {field: 'nickname', title: '昵称', style: 'cursor: pointer;',event:'set-nickname', width: 180}
+                , {field: 'telephone', title: '电话', style: 'cursor: pointer;',event:'set-telephone', width: 150}
+                , {field: 'email', title: '邮箱', style: 'cursor: pointer;',event:'set-email', width: 180}
+            ]]
+            , parseData: function (res) { //res 即为原始返回的数据
+                if (res.list[0] == null)
+                    return {"code": 0, "msg": "", "count": res.total, "data": []};
+                return {"code": 0, "msg": "", "count": res.total, "data": res.list};
+            }
+
+        });
+
+        table.on('tool(test)', function (obj) {
+            var data = obj.data;
+            switch (obj.event) {
+                case "set-nickname":
+                    layer.prompt({
+                        formType: 2
+                        , title: '修改 账号 为 [' + data.account + '] 的昵称'
+                        , value: data.nickname
+                    }, function (value, index) {
+                        layer.close(index);
+
+                        //这里一般是发送修改的Ajax请求
+                        $.ajax({
+                            url: 'http://localhost:8080/user/update',
+                            method: 'post',
+                            data:JSON.stringify({account:data.account, password:data.password,
+                            nickname:value,telephone:data.telephone,email:data.email}),
+                            dataType: 'text',
+                            contentType: 'application/json; charset=UTF-8',// 解决415错误
+                            success: (function () {
+                                layer.alert("修改成功!", function () {
+                                    location.reload();
+                                })
+                            })
+                        })
+                        //同步更新表格和缓存对应的值
+                    });
+                    break;
+                case "set-telephone":
+                    layer.prompt({
+                        formType: 2
+                        , title: '修改 账号 为 [' + data.account + '] 的电话'
+                        , value: data.telephone
+                    }, function (value, index) {
+                        layer.close(index);
+                        var phoneReg = /^1[123456789]\d{9}$/;
+                        if (!value.match(phoneReg)) {
+                            layer.msg("手机号格式错误,修改失败!");
+                            return;
+
+                        }
+                        else {
+                            //这里一般是发送修改的Ajax请求
+                            $.ajax({
+                                url: 'http://localhost:8080/user/update',
+                                method: 'post',
+                                data: JSON.stringify({
+                                    account: data.account, password: data.password,
+                                    nickname: data.nickname, telephone: value, email: data.email
+                                }),
+                                dataType: 'text',
+                                contentType: 'application/json; charset=UTF-8',// 解决415错误
+                                success: (function () {
+                                    layer.alert("修改成功!", function () {
+                                        location.reload();
+                                    })
+                                })
+
+                            })
+                        }
+                    });
+                    break;
+                case "set-email":
+                    layer.prompt({
+                        formType: 2
+                        , title: '修改 账号 为 [' + data.account + '] 的邮箱'
+                        , value: data.email
+                    }, function (value, index) {
+                        layer.close(index);
+                        var regm = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
+                        if (!value.match(regm)) {
+                            layer.msg("邮箱格式错误,修改失败!");
+                            return;
+
+                        }
+                        else {
+                            //这里一般是发送修改的Ajax请求
+                            $.ajax({
+                                url: 'http://localhost:8080/user/update',
+                                method: 'post',
+                                data: JSON.stringify({
+                                    account: data.account, password: data.password,
+                                    nickname: data.nickname, telephone: data.telephone, email: value
+                                }),
+                                dataType: 'text',
+                                contentType: 'application/json; charset=UTF-8',// 解决415错误
+                                success: (function () {
+                                    layer.alert("修改成功!", function () {
+                                        location.reload();
+                                    })
+                                })
+
+                            })
+                        }
+                    });
+                    break;
+            }
+        });
+        table.on('toolbar(test)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id)
+            var data = checkStatus.data; //获取选中的数据
+           // console.log(obj.data)
+
+            /*form.val('update_filter',{
+                'alteraccount':$('#id').val().account,
+                'alterpassword':data.password
+
+
+            })*/
+            switch (obj.event) {
+
+                case 'add':
+                    layer.msg('添加');
+                    layui.use(['laydate', 'laypage', 'layer', 'table', 'carousel', 'upload', 'element', 'slider'], function () {
+                        layer.open({
+                            type: 1,
+                            title: '添加用户',
+                            area: ['35%', '65%'],
+                            offset: 'auto',
+                            content: $('#userInsert'),
+                        })
+
+                    })
+                    break;
+
+                case 'update':
+                    if (data.length === 0) {
+                        layer.msg('请选择一行');
+                    } else if (data.length > 1) {
+                        layer.msg('只能同时编辑一个');
+                    } else {
+                       // layui.use(['laydate', 'laypage', 'layer', 'table', 'carousel', 'upload', 'element', 'slider','form'], function () {
+                            layer.open({
+                                type: 1,
+                                title: '修改用户',
+                                area: ['35%', '65%'],
+                                offset: 'auto',
+                                content: $('#userUpdate'),
+                            })
+                        //初始值设为原始值
+                        $('#alteraccount').val(data[0].account);
+                        $('#alterpassword').val(data[0].password);
+                        $('#alternickname').val(data[0].nickname);
+                        $('#altertelephone').val(data[0].telephone);
+                        $('#alteremail').val(data[0].email);
+                        //})
+                    }
+                    break;
+                case 'delete':
+                    if (data.length === 0) {
+                        layer.msg('请选择一行');
+                        /*} else if(data.length > 1) {
+                        layer.msg('只能同时删除一个');*/
+                    } else {
+                        //console.log(data.length);
+                        layer.msg('删除');
+                        layer.confirm("您确定要删除吗？" ,{icon: 3, title:'提示'}, function(index) {
+                            var old = table.cache.allbooks;
+                            for (j = 0, len = data.length; j < len; j++) {
+                                console.log(data[j].account);
+                                $.ajax({
+                                    url: 'http://localhost:8080/user/deleteByAccount?account=' + data[j].account,
+                                    type: 'get',
+                                    success: (function (res) {
+                                        console.log(res);
+                                        if (res == "delete fail: has book borrowed") {
+                                            layer.alert("用户已借书，删除失败！", function () {
+                                                location.reload();
+                                            })
+                                        } else if (res == "delete fail") {
+                                            layer.msg("删除失败，请重试！")
+                                        } else if ("delete succeed") {
+
+                                            layer.alert("删除成功!", function () {
+                                                location.reload();
+                                            })
+
+                                        }
+
+
+                                    })
+
+                                })
+                            }
+                        })
+                    }
+
+
+                    break;
+            }
+            ;
+        })
+        //  });
+       layui.use(['laydate', 'laypage', 'layer', 'carousel', 'upload', 'element', 'form', 'slider',], function () {
+           var form = layui.form;
+           form.verify({
+               //数组的两个值分别代表：[正则匹配、匹配不符时的提示文字]
+               pass: [/^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,18}$/, '密码必须为6-18位含字母数字！'],
+               //barcode:[/\d{13}/, '索引号应为13位']
+           });
+
+           var regpass = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,18}$/;
+           var regm = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
+           var phoneReg = /^1[0123456789]\d{9}$/;
+           $(document).on('click', '#submit', function () {
+
+               if ($('#newaccount').val() == "") {
+                   return
+               }
+               if (!($('#newpassword').val().match(regpass))) {
+                   return
+               }
+               if ($('#newnickname').val() == "") {
+                   //layer.msg("出版社不能为空")
+                   return
+               }
+               if ($('#newtelephone').val().length != 11) {
+                   return
+               }
+               if (!($('#newemail').val().match(regm))) {
+                   // layer.msg("价格不能为空")
+                   return
+               }
+
+               $.ajax({
+                   url: 'http://localhost:8080/user/insert',
+                   type: 'post',
+                   data: JSON.stringify({
+                       account: $('#newaccount').val(),
+                       password: $('#newpassword').val(),
+                       nickname: $('#newnickname').val(),
+                       telephone: $('#newtelephone').val(),
+                       email: $('#newemail').val()
+                   }),
+                   dataType: 'text',
+                   contentType: 'application/json; charset=UTF-8',// 解决415错误
+                   success: (function (rec) {
+                      if(rec=="insert succeed") {
+                          layer.alert("添加成功!", function () {
+                              window.location.href = 'user_show.html';
+                              return false;
+                          });
+                      }
+                      else if(rec=="insert fail:duplicate key")
+                      {
+                          layer.alert("添加失败，账号已存在！", function () {
+                              window.location.href = 'user_show.html';
+                              return false;
+                          });
+                      }
+                      else
+                      {
+                          layer.alert("添加失败，账号已存在！", function () {
+                              window.location.href = 'user_show.html';
+                              return false;
+                          });
+                      }
+                   })
+               })
+
+           })
+       });
+        layui.use(['laydate', 'laypage', 'layer', 'carousel', 'upload', 'element', 'form', 'slider',], function () {
+            var regpass = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,18}$/;
+            var regm = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
+            var phoneReg = /^1[0123456789]\d{9}$/;
+            $(document).on('click', '#update', function () {
+                if ($('#alternickname').val()=="") {
+                    //layer.msg("手机号格式错误")
+                    return
+                }
+               if (!$('#altertelephone').val().match(phoneReg)) {
+                    //layer.msg("手机号格式错误")
+                    return
+                }
+                if (!($('#alteremail').val().match(regm))) {
+
+                    return
+                }
+                    $.ajax({
+                        url: 'http://localhost:8080/user/update',
+                        type: 'post',
+                        data: JSON.stringify({
+                            account: $('#alteraccount').val(),
+                            password: $('#alterpassword').val(),
+                            nickname: $('#alternickname').val(),
+                            telephone: $('#altertelephone').val(),
+                            email: $('#alteremail').val()
+                        }),
+                        dataType: 'text',
+                        contentType: 'application/json; charset=UTF-8',// 解决415错误
+                        success: (function () {
+                            layer.alert("修改成功!", function () {
+                                location.reload();
+                            })
+
+                        })
+                    })
+
+            })
+        })
+    })
+    //监听行工具事件
+</script>
+</body>
+</html>

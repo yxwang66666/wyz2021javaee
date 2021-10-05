@@ -1,0 +1,195 @@
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="icon" href="../../img/bookico.ico" sizes="144x144" type="images/x-ico" />
+    <title>图书管理系统 - 管理员端</title>
+
+    <link rel="stylesheet" href="https://www.layuicdn.com/layui-v2.5.4/css/layui.css" media="all">
+    <script src="https://www.layuicdn.com/layui-v2.5.4/layui.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+</head>
+<script>
+    var par=localStorage.getItem('data');
+    var params=JSON.parse(par);
+    //console.log(params.account);
+</script>
+<body class="layui-layout-body">
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="lookbook">查看图书信息</a>
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="uploadimg">上传图片</a>
+</script>
+<div class="layui-upload" style="display: none" id="goimg">
+    <button type="button" class="layui-btn" id="uimg">上传图片</button>
+    <div class="layui-upload-list">
+        <img class="layui-upload-img" id="demo1">
+        <p id="demoText"></p>
+    </div>
+</div>
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">图书管理系统</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item"><a href="../../AdminFirstPage.html">首页</a></li>
+            <li class="layui-nav-item layui-this"><a href="../book/book_show.html">图书管理</a></li>
+            <li class="layui-nav-item"><a href="../user/user_show.html">用户管理</a></li>
+
+        </ul>
+
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="../../../img/1.jpg" class="layui-nav-img">
+                    <script>
+                        document.write(params.account);
+                    </script>
+                </a>
+            </li>
+            <li class="layui-nav-item"><a href="../../logout.html">注销</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a  href="javascript:;">图书信息</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="book_show.html">图书展示</a></dd>
+                        <dd class="layui-this"><a href="book_stastic.html">图书统计</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;">用户信息</a>
+                    <dl class="layui-nav-child">
+                        <dd ><a href="../user/user_show.html">所有用户</a></dd>
+                        <dd><a href="../borrow/borrow_show.html">当前借阅</a></dd>
+                        <dd><a href="../borrow/return_show.html">借阅历史</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item ">
+                    <a class="" href="javascript:;">违约信息</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="../default/default_show.html">所有违约</a></dd>
+                        <dd ><a href="../default/default_stastic.html">违约统计</a></dd>
+
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style="padding: 15px;">
+            <h2>图书统计</h2>
+
+        </div>
+        <br/>
+        <div id="main" style="width: 900px;height:600px;"></div>
+        <script type="text/javascript">
+            //var p ='12';
+            var borrow=0;
+            var sumbook;
+            var rate;
+            $.ajax({
+                url:'http://localhost:8080/book/selectAll',
+               data:{page:1,limit:8},
+                dataType:'json',
+                method:'get',
+                async:false,
+                success:function (res){
+                sumbook=res.total;
+                }
+            })
+            $.ajax({
+                url:'http://localhost:8080/borrow/selectAll',
+                data:{page:1,limit:8},
+                dataType:'json',
+                method:'get',
+                async:false,
+                success:function (res){
+                    borrow=res.total;
+                }
+            })
+            rate=(borrow/sumbook*100).toFixed(2);
+            console.log(rate);
+            var myChart = echarts.init(document.getElementById('main'));
+            var titletxt = "图书在馆情况统计";
+            var option = {
+                title: {
+                    left: 'center',
+                    text: titletxt,
+                    textStyle: {
+                        fontSize: 20,
+                        fontWeight: 'normal',
+                        fontFamily: "微软雅黑"
+                    }
+                },
+                tooltip: {
+                    formatter: '{a} <br/>{b} '
+                },
+                toolbox: {
+                    feature: {
+                        restore: {},
+                        saveAsImage: {}
+                    }
+                }, legend: {
+                    orient: 'vertical',
+                    left: '10%',
+                    top:'10%',
+                    data: [          // 数据数组，name 为数据项名称，value 为数据项值
+                        {value:(100-rate).toFixed(2), name:'在馆 ：'+(100-rate).toFixed(2)+' %'},
+                        {value:rate, name:'不在馆 ：'+rate+' %'},
+                    ],
+                },
+                color: ['rgb(0,150,136)', 'rgb(51,75,92)'],
+                series : [
+                    {
+                        name: '在馆统计',
+                        type: 'pie',    // 设置图表类型为饼图
+                        radius: '55%',  // 饼图的半径，外半径为可视区尺寸（容器高宽中较小一项）的 55% 长度。
+                        data:[          // 数据数组，name 为数据项名称，value 为数据项值
+                            {value:(100-rate).toFixed(2), name:'在馆 ：'+(100-rate).toFixed(2)+' %'},
+                            {value:rate, name:'不在馆 ：'+rate+' %'},
+                        ],
+
+                    }
+                ]
+            };
+            myChart.setOption(option);
+        </script>
+    </div>
+
+
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © Copyright 2020-2020   &nbsp;&nbsp;&nbsp;&nbsp;<a href="" style="color: #185582">网站说明</a>    &nbsp;&nbsp;&nbsp;&nbsp;<a href="" style="color: #185582">友情链接</a>
+    </div>
+</div>
+<script>
+    layui.use(['laydate', 'laypage', 'layer', 'table', 'carousel', 'upload', 'element', 'slider',], function(){
+
+
+
+    });
+
+
+    //监听行工具事件
+
+</script>
+
+<script>
+    //JavaScript代码区域
+    layui.use('element', function(){
+        var element = layui.element;
+
+    });
+</script>
+</body>
+</html>

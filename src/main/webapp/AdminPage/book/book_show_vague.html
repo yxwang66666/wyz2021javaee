@@ -1,0 +1,1204 @@
+
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="icon" href="../../img/bookico.ico" sizes="144x144" type="images/x-ico" />
+    <title>图书管理系统 - 管理员端</title>
+
+    <link rel="stylesheet" href="https://www.layuicdn.com/layui-v2.5.4/css/layui.css" media="all">
+    <script src="https://www.layuicdn.com/layui-v2.5.4/layui.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+</head>
+<script>
+    var par=localStorage.getItem('data');
+    var params=JSON.parse(par);
+    var borrow=true;
+    var brLayer;
+    //console.log(params.account);
+</script>
+<body class="layui-layout-body">
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="uploadimg">上传图片</a>
+</script>
+<div class="layui-upload" style="display: none" id="goimg">
+    <input type="file" name="file" id="s_pmt_dw" style="width:190px">
+    <button type="button" class="layui-btn" id="uimg">上传图片</button>
+    <div class="layui-form-item" v-show="picIsShow">
+        <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;">
+            预览图：
+            <div class="layui-upload-list" id="datumPic"></div>
+        </blockquote>
+    </div>
+</div>
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">图书管理系统</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item"><a href="../../AdminFirstPage.html">首页</a></li>
+            <li class="layui-nav-item layui-this"><a href="book_show.html">图书管理</a></li>
+            <li class="layui-nav-item"><a href="../user/user_show.html">用户管理</a></li>
+
+        </ul>
+
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="../../../img/1.jpg" class="layui-nav-img">
+                    <script>
+                        document.write(params.account);
+                    </script>
+                </a>
+
+            </li>
+            <li class="layui-nav-item"><a href="../../logout.html">注销</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a  href="javascript:;">图书信息</a>
+                    <dl class="layui-nav-child">
+                        <dd class="layui-this"><a href="book_show.html">图书展示</a></dd>
+                        <dd ><a href="../book/book_stastic.html">图书统计</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;">用户信息</a>
+                    <dl class="layui-nav-child">
+                        <dd ><a href="../user/user_show.html">所有用户</a></dd>
+                        <dd><a href="../borrow/borrow_show.html">用户借阅</a></dd>
+                        <dd><a href="../borrow/return_show.html">借阅历史</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item ">
+                    <a class="" href="javascript:;">违约信息</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="../default/default_show.html">所有违约</a></dd>
+                        <dd ><a href="../default/default_stastic.html">违约统计</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <div class="layui-form layui-form-pane">
+            <!-- 内容主体区域 -->
+            <div style="padding: 15px;">
+                <button class="layui-btn" onclick="borrowBook()">借阅</button>
+                <button class="layui-btn" onclick="returnBook()">归还</button>
+            </div>
+            <div style="margin-top: 15px;padding-right: 30px;padding-left: 10px">
+                <h2>搜索与查询</h2>
+                <br/>
+                <div class="layui-input-item">
+                    <div class="layui-input-block layui-inline"style="margin-left: 10px">
+                        <input type="text" name="id" id="searchISBN"placeholder="请输入ISBN" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-input-block layui-inline"style="margin-left: 10px">
+                        <input type="text" name="id" id="searchTitle"placeholder="请输入书名" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-input-block layui-inline"style="margin-left: 10px">
+                        <input type="text" name="id" id="searchAuthor"placeholder="请输入作者" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-input-block layui-inline"style="margin-left: 10px">
+                        <input type="text" name="id" id="searchPublisher"placeholder="请输入出版社" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-inline" data-type="reload" id="go">搜索</button>
+                    </div>
+                    <div class="layui-input-block layui-inline" id="selectMethod">
+                        <input type="radio" name="character"  value="索引查询" title="索引查询" id="byBarCode">
+                        <input type="radio" name="character"  value="模糊查询" title="模糊查询" id="byAll" checked>
+                    </div>
+                </div>
+
+                <br />
+                <table class="layui-hide" id="allbooks" lay-filter="test"></table>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © Copyright 2020-2020   &nbsp;&nbsp;&nbsp;&nbsp;<a href="" style="color: #185582">网站说明</a>    &nbsp;&nbsp;&nbsp;&nbsp;<a href="" style="color: #185582">友情链接</a>
+    </div>
+</div>
+<div style="padding: 15px;display: none" id="bookInsert" >
+    <form class="layui-form layui-form-pane" > <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+        <div class="layui-form-item">
+            <label class="layui-form-label">索引号</label>
+            <div class="layui-input-inline">
+                <input type="text" name="newBarCode" id="newBarCode" lay-verify="required|barcode"   placeholder="请输入13位索引号" autocomplete="off" class="layui-input">
+            </div>
+            <i class="layui-icon layui-icon-search" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">书名</label>
+            <div class="layui-input-inline">
+                <input type="text" name="newTitle" id="newTitle"  placeholder="请输入书名" autocomplete="off" class="layui-input">
+            </div>
+            <i class="layui-icon layui-icon-read" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">作者</label>
+            <div class="layui-input-inline">
+                <input type="text" name="newAuthor" id="newAuthor" placeholder="请输入作者" autocomplete="off" class="layui-input">
+            </div>
+            <i class="layui-icon layui-icon-username" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">出版社</label>
+            <div class="layui-input-inline">
+                <input type="text" name="newPublisher" id="newPublisher" placeholder="请输入出版社" autocomplete="off" class="layui-input">
+            </div>
+            <i class="layui-icon layui-icon-username" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">ISBN</label>
+            <div class="layui-input-inline">
+                <input type="text" name="newISBN" id="newISBN" lay-verify="required|isbn"  placeholder="请输入13位ISBN" autocomplete="off" class="layui-input">
+            </div>
+            <i class="layui-icon layui-icon-circle-dot" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">价格</label>
+            <div class="layui-input-inline">
+                <input type="text" name="newPrice" id="newPrice" lay-verify="number"  placeholder="请输入价格" autocomplete="off" class="layui-input">
+            </div>
+            <i class="layui-icon layui-icon-rmb" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">介绍</label>
+            <div class="layui-input-inline">
+                <input type="text" name="newIntroduction" id="newIntroduction"  placeholder="请输入介绍" autocomplete="off" class="layui-input">
+            </div>
+            <i class="layui-icon layui-icon-form" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item" id="goimg1">
+            <input type="file" name="file" id="s_pmt_dw1" style="width:190px">
+            <div class="layui-form-item" v-show="picIsShow">
+                <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;">
+                    预览图：
+                    <div class="layui-upload-list" id="datumPic1"></div>
+                </blockquote>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" type="button" id="submit" lay-submit  >立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                <button class="layui-btn" type="button" id="imgSubmit" lay-submit style="display:none" ></button>
+            </div>
+        </div>
+    </form>
+</div>
+<div style="padding: 15px;display: none" id="bookUpdate" >
+    <form class="layui-form layui-form-pane" > <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+        <div class="layui-form-item">
+            <label class="layui-form-label">书名</label>
+            <div class="layui-input-inline">
+                <input type="text" name="updateTitle" id="updateTitle" lay-verify="required"  placeholder="请输入书名" autocomplete="off" class="layui-input">
+            </div>
+            <i class="layui-icon layui-icon-read" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">作者</label>
+            <div class="layui-input-inline">
+                <input type="text" name="updateAuthor" id="updateAuthor"lay-verify="required"  placeholder="请输入作者" autocomplete="off" class="layui-input">
+            </div>
+            <i class="layui-icon layui-icon-username" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">出版社</label>
+            <div class="layui-input-inline">
+                <input type="text" name="updatePublisher" id="updatePublisher" lay-verify="required" placeholder="请输入出版社" autocomplete="off" class="layui-input">
+            </div>
+            <i class="layui-icon layui-icon-username" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">ISBN</label>
+            <div class="layui-input-inline">
+                <input type="text" name="updateISBN" id="updateISBN" lay-verify="required" readonly="true" style="background:#CCCCCC" autocomplete="off" class="layui-input">
+            </div>
+            <i class="layui-icon layui-icon-circle-dot" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">价格</label>
+            <div class="layui-input-inline">
+                <input type="text" name="updatePrice" id="updatePrice" lay-verify="required|number"  placeholder="请输入价格" autocomplete="off" class="layui-input">
+            </div>
+            <i class="layui-icon layui-icon-rmb" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">介绍</label>
+            <div class="layui-input-inline">
+                <input type="text" name="updateIntroduction" id="updateIntroduction" lay-verify="required"  placeholder="请输入介绍" autocomplete="off" class="layui-input">
+            </div>
+            <i class="layui-icon layui-icon-form" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+
+        <div class="layui-form-item" id="goimg2">
+            <input type="file" name="file" id="s_pmt_dw2" style="width:190px">
+            <button type="button" class="layui-btn" id="uimg2">修改图片</button>
+            <div class="layui-form-item">
+                <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;">
+                    预览图：
+                    <div class="layui-upload-list" id="datumPic2"></div>
+                </blockquote>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" type="button" id="updateSubmit" lay-submit  >立即提交</button>
+            </div>
+        </div>
+    </form>
+</div>
+<div style="padding: 15px;display: none" id="borrowAndReturn" >
+    <form class="layui-form layui-form-pane" > <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-inline">
+                <input type="text" name="updatebarCode" id="brAccount" lay-verify="required"  autocomplete="off"  class="layui-input ">
+            </div>
+            <i class="layui-icon layui-icon-search" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">索引号</label>
+            <div class="layui-input-inline">
+                <input type="text" name="brbarCode" id="brBarcode" lay-verify="required|barcode"  autocomplete="off"  class="layui-input ">
+            </div>
+            <i class="layui-icon layui-icon-search" style="font-size: 30px; color: #1E9FFF;"></i>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" type="button" id="brSubmit" lay-submit  >立即提交</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $("#selectMethod").on('click', function () {
+        var item=$('input:radio[id="byBarCode"]:checked').val();
+        if(item=="索引查询")
+            window.location.href="book_show.html";
+
+    })
+    layui.use(['laydate', 'laypage', 'layer', 'table', 'carousel', 'upload', 'element','slider',], function(){
+        var table = layui.table;
+        var upload = layui.upload;
+
+        //第一个实例
+        var selectTable=table.render({
+            elem: '#allbooks'
+            ,height: 600
+            ,id: 'book'
+            ,cellMinWidth: 80
+            ,url: 'http://localhost:8080/book/selectAllISBN'
+            ,method:'get'
+            ,toolbar: 'default'
+            ,totalRow: true //合计行
+            ,page: true //分页
+            ,limit:8
+            ,limits: [3,5,8,10]
+            ,cols: [[ //表头
+                {type: 'checkbox', width: '5%',fixed: 'left'}
+                ,{field:'isbn',title:'ISBN',width:'15%'}
+                ,{field: 'title', title: '书名',event:'set-title', style:'cursor: pointer;',width:'10%'}
+                ,{field: 'author',title: '作者',event:'set-author',style:'cursor: pointer;',width: '10%'}
+                ,{field: 'publisher',title: '出版社',event: 'set-publisher',style:'cursor: pointer;',width: '15%'}
+                ,{field: 'sum',title: '馆藏数',width: '10%'}
+                ,{field: 'num',title: '在馆数',width: '10%'}
+                ,{field: 'price',title: '价格',event:'set-price',style:'cursor: pointer;',width: '10%'}
+                ,{field: 'introduction',title: '介绍',event: 'set-introduction',style:'cursor: pointer;',width: '6%'}
+                ,{fixed: 'right', width: 105, align:'center', toolbar: '#barDemo',width:'8%'}
+            ]]
+            ,parseData: function(res) { //res 即为原始返回的数据
+                console.log(res)
+                if(res.list[0]==null)
+                    return {"code": 0, "msg": "", "count": res.total, "data": []};
+                for (j = 0, len = res.list.length; j < len; j++) {
+                    if (res.list[j].isBorrowed === false)
+                        res.list[j].isBorrowed = '在馆';
+                    else
+                        res.list[j].isBorrowed = '不在馆';
+                }
+                return {"code": 0, "msg": "", "count": res.total, "data": res.list};
+            }
+        });
+        $('#go').on('click',function (){
+
+            var serTitle=$('#searchTitle').val();
+            var serAuthor=$('#searchAuthor').val();
+            var serPublisher=$('#searchPublisher').val();
+            var serISBN=$('#searchISBN').val();
+            if(serTitle !== ''||serAuthor!=''||serPublisher!=''||serISBN!='') {
+                if (document.getElementById("byAll").checked) {
+                    table.reload('book',{
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        },
+                        method:'get',
+                        url: 'http://localhost:8080/book/select',
+                        where:{
+                            isbn:$('#searchISBN').val(),
+                            title:$('#searchTitle').val(),
+                            author:$('#searchAuthor').val(),
+                            publisher:$('#searchPublisher').val()
+                        }
+                        ,page: {
+                            curr:1
+                        }
+                    })
+
+                }
+            }
+            else {
+                table.reload('book',{
+                    method:'get'
+                    ,url: 'http://localhost:8080/book/selectAllISBN'
+                    ,page: {
+                        curr:1
+                    }
+                })
+            }
+            //console.log(serchit);
+
+        });
+        table.on('tool(test)', function(obj){
+            var data = obj.data;
+            switch (obj.event){
+                case "set-title":
+                    layer.prompt({
+                        formType: 2
+                        , title: '修改 ISBN 为 [' + data.isbn + '] 的书本名称'
+                        , value: data.title
+                    }, function (value, index) {
+                        layer.confirm("确认提交吗？",function (index1) {
+                            layer.close(index1)
+                            layer.close(index);
+                            var isBorrowed = false;
+                            if (data.isBorrowed == "不在馆")
+                                isBorrowed = true;
+                            //这里一般是发送修改的Ajax请求
+                            $.ajax({
+                                url: 'http://localhost:8080/book/update',
+                                method: 'post',
+                                data: JSON.stringify({
+                                    barCode: data.barCode, title: value, author: data.author,
+                                    publisher: data.publisher, isbn: data.isbn, price: data.price,
+                                    introduction: data.introduction, isBorrowed: isBorrowed
+                                }),
+                                contentType: 'application/json; charset=UTF-8',// 解决415错误
+                                dataType: 'text',
+                                success: (function () {
+                                    //同步更新表格和缓存对应的值
+                                    /*obj.update({
+                                    title: value
+                                });*/
+                                    window.location.reload()
+                                })
+                            })
+                        })
+                    })
+
+                    break;
+                case "set-author":
+                    layer.prompt({
+                        formType: 2
+                        , title: '修改 ISBN 为 [' + data.isbn + '] 的作者'
+                        , value: data.author
+                    }, function (value, index) {
+                        layer.confirm("确认提交吗？",function (index1) {
+                            layer.close(index1)
+                            layer.close(index);
+                            var isBorrowed = false;
+                            if (data.isBorrowed == "不在馆")
+                                isBorrowed = true;
+                            //这里一般是发送修改的Ajax请求
+                            $.ajax({
+                                url: 'http://localhost:8080/book/update',
+                                method: 'post',
+                                data: JSON.stringify({
+                                    barCode: data.barCode, title: data.title, author: value,
+                                    publisher: data.publisher, isbn: data.isbn, price: data.price,
+                                    introduction: data.introduction, isBorrowed: isBorrowed
+                                }),
+                                contentType: 'application/json; charset=UTF-8',// 解决415错误
+                                dataType: 'text',
+                                success: (function () {
+                                    //同步更新表格和缓存对应的值
+                                    /*obj.update({
+                                    author: value
+                                });*/
+                                    window.location.reload()
+
+                                })
+                            })
+                        })
+                    })
+
+                    break;
+                case "set-publisher":
+                    layer.prompt({
+                        formType: 2
+                        , title: '修改 ISBN 为 [' + data.isbn + '] 的出版社'
+                        , value: data.publisher
+                    }, function (value, index) {
+                        layer.confirm("确认提交吗？",function (index1) {
+                            layer.close(index1)
+                            layer.close(index);
+                            var isBorrowed = false;
+                            if (data.isBorrowed == "不在馆")
+                                isBorrowed = true;
+                            //这里一般是发送修改的Ajax请求
+                            $.ajax({
+                                url: 'http://localhost:8080/book/update',
+                                method: 'post',
+                                data: JSON.stringify({
+                                    barCode: data.barCode, title: data.title, author: data.author,
+                                    publisher: value, isbn: data.isbn, price: data.price,
+                                    introduction: data.introduction, isBorrowed: isBorrowed
+                                }),
+                                contentType: 'application/json; charset=UTF-8',// 解决415错误
+                                dataType: 'text',
+                                success: (function () {
+                                    //同步更新表格和缓存对应的值
+                                    /*obj.update({
+                                    publisher: value
+                                });*/
+                                    window.location.reload()
+
+                                })
+                            })
+                        })
+                    })
+
+                    break;
+                case "set-price":
+                    layer.prompt({
+                        formType: 2
+                        , title: '修改 ISBN 为 [' + data.isbn + '] 的价格'
+                        , value: data.price
+                    }, function (value, index) {
+                        layer.confirm("确认提交吗？",function (index1) {
+                            layer.close(index1)
+                            if (isNaN(value) || !isNaN(value) && value <= 0) {
+                                layer.msg("价格必须为正数！");
+                                return;
+                            }
+                            layer.close(index);
+                            var isBorrowed = false;
+                            if (data.isBorrowed == "不在馆")
+                                isBorrowed = true;
+                            //这里一般是发送修改的Ajax请求
+                            $.ajax({
+                                url: 'http://localhost:8080/book/update',
+                                method: 'post',
+                                data: JSON.stringify({
+                                    barCode: data.barCode, title: data.title, author: data.author,
+                                    publisher: data.publisher, isbn: data.isbn, price: value,
+                                    introduction: data.introduction, isBorrowed: isBorrowed
+                                }),
+                                contentType: 'application/json; charset=UTF-8',// 解决415错误
+                                dataType: 'text',
+                                success: (function () {
+                                    //同步更新表格和缓存对应的值
+                                    /*obj.update({
+                                    price: value
+                                });*/
+                                    window.location.reload()
+
+                                })
+                            })
+                        })
+                    })
+
+                    break;
+                case "set-introduction":
+                    layer.prompt({
+                        formType: 2
+                        , title: '修改 ISBN 为 [' + data.isbn + '] 的介绍'
+                        , value: data.introduction
+                    }, function (value, index) {
+                        layer.confirm("确认提交吗？",function (index1) {
+                            layer.close(index1)
+                            layer.close(index);
+                            var isBorrowed = false;
+                            if (data.isBorrowed == "不在馆")
+                                isBorrowed = true;
+                            //这里一般是发送修改的Ajax请求
+                            $.ajax({
+                                url: 'http://localhost:8080/book/update',
+                                method: 'post',
+                                data: JSON.stringify({
+                                    barCode: data.barCode, title: data.title, author: data.author,
+                                    publisher: data.publisher, isbn: data.isbn, price: data.price,
+                                    introduction: value, isBorrowed: isBorrowed
+                                }),
+                                contentType: 'application/json; charset=UTF-8',// 解决415错误
+                                dataType: 'text',
+                                success: (function () {
+                                    //同步更新表格和缓存对应的值
+                                    /*obj.update({
+                                    introduction: value
+                                });*/
+                                    window.location.reload()
+                                })
+                            })
+                        })
+                    })
+
+                    break;
+                case "uploadimg":
+                    layer.open({
+                        type:1,
+                        content:$('#goimg'),
+
+                    })
+
+                    document.getElementById('s_pmt_dw').value='';
+                    $('#datumPic').empty();
+                    pictureUrl = data.image;
+                    //判断是否为本地路径
+                    if(pictureUrl.slice(0,4)!='http')
+                    {
+                        var index=pictureUrl.indexOf('resources')
+                        pictureUrl='../../../'+pictureUrl.slice(index)
+                        console.log(pictureUrl)
+                    }
+                    var str0 = '<img src="' + pictureUrl + '" style="height:150px;" class="layui-upload-img"/>';
+                    $('#datumPic').append(str0);
+                    //}
+                    upload.render({
+                        elem: '#s_pmt_dw'
+                        ,data:{"isbn":data.isbn}
+                        ,url:'http://localhost:8080/book/updateImage'
+
+                        ,size: 5000 				//最大允许上传的文件大小
+                        ,multiple: true				//设置是否多个文件上传
+                        ,auto: false
+                        ,accept: 'file'	//不自动上传设置
+                        ,bindAction:'#uimg'
+                        ,dataType:'text'
+                        , error: function (res) {
+                            //请求异常回调
+                            console.error(res);
+                        }
+                        , choose: function(obj) {
+
+                            obj.preview(function(index, file, result) {
+
+                                $('#datumPic').empty();
+                                var str = '<img src="' + result + '" style="height:80px;" class="layui-upload-img"/>';
+                                $('#datumPic').append(str);
+
+                            });
+
+                        }
+                        ,done: function(res){
+                            /*var index=layer.alert('上传成功',function ()
+                            {
+                                layer.close(index);
+                                window.location.reload();
+                            })*/
+                            if(res['return']=="update fail")
+                            {
+                                layer.msg("更新失败！")
+                            }
+                            else if(res['return']=="update succeed")
+                            {
+                                layer.alert("添加成功!",function() {
+                                    location.reload();
+                                })
+                            }
+
+
+                        }
+                    })
+
+            }
+        });
+
+        // upload.render({
+        //     elem: '#uimg'
+        //     ,url:'/upload'
+        //
+        //
+        //     ,done: function(res){
+        //         layer.msg('上传成功')
+        //
+        //     }
+        // })
+        table.on('toolbar(test)', function(obj){
+            //console.log(obj)
+            var checkStatus = table.checkStatus('book')
+                ,data = checkStatus.data; //获取选中的数据
+            switch(obj.event){
+
+                case 'add':
+                    layer.msg('添加');
+                    document.getElementById('s_pmt_dw1').value='';
+                    $('#datumPic1').empty();
+                    layui.use(['laydate', 'laypage', 'layer', 'table', 'carousel', 'upload', 'element', 'slider'], function() {
+                        layer.open({
+                            type: 1,
+                            title: '录入图书',
+                            area: ['28%', '65%'],
+                            offset: 'auto',
+                            content: $('#bookInsert'),
+                        })
+
+                    })
+
+                    //table.reload()
+                    break;
+
+                case 'update':
+                    if(data.length === 0){
+                        layer.msg('请选择一行');
+                    } else if(data.length > 1){
+                        layer.msg('只能同时编辑一个');
+                    } else {
+                        console.log(data);
+                        layer.msg('修改');
+                        document.getElementById('s_pmt_dw2').value='';
+                        $('#datumPic2').empty();
+                        pictureUrl = data[0].image;
+
+                        //判断是否为本地路径
+                        if(pictureUrl.slice(0,4)!='http')
+                        {
+                            var index=pictureUrl.indexOf('resources')
+                            pictureUrl='../../../'+pictureUrl.slice(index)
+                            console.log(pictureUrl)
+                        }
+                        var str0 = '<img src="' + pictureUrl + '" style="height:150px;" class="layui-upload-img"/>';
+                        $('#datumPic2').append(str0);
+                        //layui.use(['laydate', 'laypage', 'layer', 'table', 'carousel', 'upload', 'element', 'slider'], function() {
+                            layer.open({
+                                type: 1,
+                                title: '修改ISBN为 '+data[0].isbn+' 的图书相关信息',
+                                area: ['28%', '65%'],
+                                offset: 'auto',
+                                content: $('#bookUpdate'),
+                            })
+                        //初始值设为原始值
+                            $('#updateTitle').val(data[0].title);
+                            $('#updateAuthor').val(data[0].author);
+                            $('#updatePublisher').val(data[0].publisher);
+                            $('#updateISBN').val(data[0].isbn);
+                            $('#updatePrice').val(data[0].price);
+                            $('#updateIntroduction').val(data[0].introduction);
+
+                        //})
+
+                        //table.reload()
+                        break;
+                    }
+                    break;
+                case 'delete':
+                    if(data.length === 0){
+                        layer.msg('请选择一行');
+                    /*} else if(data.length > 1) {
+                        layer.msg('只能同时删除一个');*/
+                    }else {
+                        //console.log(data.length);
+                        //layer.msg('删除');
+                        layer.confirm("您确定要删除吗？" ,{icon: 3, title:'提示'}, function(index) {
+                            var old = table.cache.allbooks;
+                            for (j = 0, len = data.length; j < len; j++) {
+                                console.log(data[j].barCode);
+                                $.ajax({
+                                    url: 'http://localhost:8080/book/deleteByISBN?ISBN=' + data[j].isbn,
+                                    type: 'get',
+                                    success: (function (res) {
+                                        if (res == "delete fail: is borrowed") {
+                                            layer.msg("本书已被借走，删除失败！")
+                                        } else if (res == "delete fail") {
+                                            layer.msg("删除失败，请重试！")
+                                        } else if ("delete succeed") {
+                                            layer.alert("删除成功!", function () {
+                                                location.reload();
+                                            })
+                                        }
+                                    })
+                                })
+                            }
+                        })
+                    }
+
+                    break;
+            };
+        });
+
+    });
+    layui.use(['laydate', 'laypage', 'layer', 'carousel', 'upload', 'element','form', 'slider',], function() {
+        var form=layui.form;
+        var upload=layui.upload;
+        form.verify({
+            //数组的两个值分别代表：[正则匹配、匹配不符时的提示文字]
+            isbn:[/^\d{13}$/, 'ISBN应为13位数字'],
+            barcode:[/^\d{13}$/, '索引号应为13位数字'],
+            number: function (e) {
+                if (e && (isNaN(e)||!isNaN(e)&&e<=0))return "只能填写正数"
+            }
+        });
+        $(document).on('click', '#submit', function () {
+
+                if ($('#newBarCode').val().length != 13) {
+                    // layer.msg("索引号必须为13位")
+                    return
+                }
+
+                if ($('#newISBN').val().length != 13) {
+                    //layer.msg("ISBN必须为13位")
+                    return
+                }
+                if(!($('#newPrice').val().length==0)&&
+                    ($('#newPrice').val()<0&&isNaN($('#newPrice').val())||isNaN($('#newPrice').val()))){
+                    return
+                }
+            layer.confirm("确认提交吗？",function (index){
+                layer.close(index);
+
+                if($('#s_pmt_dw1').val()=="")
+                {
+                    console.log($('#s_pmt_dw1').val())
+                    $.ajax({
+                        url: 'http://localhost:8080/book/insert',
+                        type: 'post',
+                        data: {
+                            barCode: $('#newBarCode').val()==""?null:$('#newBarCode').val(),
+                            title: $('#newTitle').val()==""?null:$('#newTitle').val(),
+                            author: $('#newAuthor').val()==""?null:$('#newAuthor').val(),
+                            publisher: $('#newPublisher').val()==""?null:$('#newPublisher').val(),
+                            isbn: $('#newISBN').val()==""?null:$('#newISBN').val(),
+                            price: $('#newPrice').val()==""?null:$('#newPrice').val(),
+                            introduction: $('#newIntroduction').val()==""?null:$('#newIntroduction').val(),
+                            file:null
+                        },
+                        dataType: 'json',
+                        success: (function (res) {
+                            console.log(res)
+                            if(res['return']=="insert fail: duplicate key")
+                            {
+                                layer.msg("条形码已存在！")
+                            }
+                            else if(res['return']=="insert fail: unknown isbn")
+                            {
+                                layer.msg("isbn 不存在于数据库但是插入时只给出了 barCode 和 isbn，其他信息省略")
+                            }
+                            else if(res['return']=="insert fail")
+                            {
+                                layer.msg("插入失败，请重试！")
+                            }
+                            else if(res['return']=="insert succeed") {
+                                layer.alert("添加成功!",function() {
+                                    location.reload();
+                                })
+                            }
+
+
+
+                        })
+                    })
+                }
+                else
+                {
+                    var imgOnThis = document.getElementById("imgSubmit");
+                    imgOnThis.click();
+                    console.log("yessss")
+                }
+
+            })})
+        upload.render({
+            elem: '#s_pmt_dw1'
+            //,url:'http://localhost:8080/book/image'
+            , auto: false
+            , bindAction: '#imgSubmit'
+
+            , data: {
+                barCode: function () {
+                    return $('#newBarCode').val() == "" ? null : $('#newBarCode').val()
+                },
+                title: function () {
+                    return $('#newTitle').val() == "" ? null : $('#newTitle').val()
+                },
+                author: function () {
+                    return $('#newAuthor').val() == "" ? null : $('#newAuthor').val()
+                },
+                publisher: function () {
+                    return $('#newPublisher').val() == "" ? null : $('#newPublisher').val()
+                },
+                isbn: function () {
+                    return $('#newISBN').val() == "" ? null : $('#newISBN').val()
+                },
+                price: function () {
+                    return $('#newPrice').val() == "" ? null : $('#newPrice').val()
+                },
+                introduction: function () {
+                    return $('#newIntroduction').val() == "" ? null : $('#newIntroduction').val()
+                }
+            }
+            , url: 'http://localhost:8080/book/insert'
+            // , before: function (obj) {
+            //     if ($('#newBarCode').val().length != 13 || $('#newISBN').val().length != 13
+            //         || $('#s_pmt_dw1').val() == "") {
+            //         console.log("no")
+            //         throw(new Error("数据不合法"))
+            //
+            //     }   //throw(e)
+            //         //obj.stopPropagation()
+            //
+            // }
+            , error: function (res) {
+                //请求异常回调
+                console.error(res);
+            }
+            , choose: function(obj) {
+                console.log($('#s_pmt_dw1').val())
+                // document.getElementById('s_pmt_dw1').value='';
+
+                obj.preview(function(index, file, result) {
+                    // document.getElementById('s_pmt_dw1').value='';
+                    //  document.getElementById('datumPic1').value='';
+                    $('#datumPic1').empty();
+                    var str = '<img src="' + result + '" style="height:80px;" class="layui-upload-img"/>';
+                    $('#datumPic1').append(str);
+
+                });
+
+            }
+            , done: function (res) {
+                if (res['return'] == "insert fail: duplicate key") {
+                    layer.msg("条形码已存在！")
+                } else if (res['return'] == "insert fail: unknown isbn") {
+                    layer.msg("isbn 不存在于数据库但是插入时只给出了 barCode 和 isbn，其他信息省略")
+                } else if (res['return'] == "insert fail") {
+                    layer.msg("插入失败，请重试！")
+                } else if (res['return'] == "insert succeed") {
+                    layer.alert("添加成功!", function () {
+                        location.reload();
+                    })
+                }
+                /*console.log($('#newBarCode').val())
+            var index = layer.alert('上传成功', function () {
+                layer.close(index);
+                window.location.reload();
+            })*/
+
+
+            }
+        })
+    })
+    layui.use(['laydate', 'laypage', 'layer', 'carousel', 'upload', 'element','form', 'slider',], function() {
+        var form=layui.form;
+        var upload = layui.upload;
+        form.verify({
+            //数组的两个值分别代表：[正则匹配、匹配不符时的提示文字]
+            isbn:[/\d{13}/, 'ISBN应为13位'],
+            barcode:[/\d{13}/, '索引号应为13位'],
+            number: function (e) {
+                if (e && (isNaN(e)||!isNaN(e)&&e<=0))return "只能填写正数"
+            }
+        });
+        console.log($('#updateISBN').val())
+        upload.render({
+            elem: '#s_pmt_dw2'
+            ,data:{ "isbn": function (){return $('#updateISBN').val()}}
+            ,url:'http://localhost:8080/book/updateImage'
+
+            ,size: 5000 				//最大允许上传的文件大小
+            ,multiple: true				//设置是否多个文件上传
+            ,auto: false
+            ,accept: 'file'	//不自动上传设置
+            ,bindAction:'#uimg2'
+            ,dataType:'text'
+            , error: function (res) {
+                //请求异常回调
+                console.error(res);
+            }
+            , choose: function(obj) {
+
+                obj.preview(function(index, file, result) {
+
+                    $('#datumPic2').empty();
+                    var str = '<img src="' + result + '" style="height:80px;" class="layui-upload-img"/>';
+                    $('#datumPic2').append(str);
+
+                });
+
+            }
+            ,done: function(res){
+                if(res['return']=="update fail")
+                {
+                    layer.msg("更新失败！")
+                }
+                else if(res['return']=="update succeed")
+                {
+                    var index1=layer.alert("添加成功!",function() {
+                        layer.close(index1);
+                    })
+                }
+
+
+            }
+        })
+        $(document).on('click', '#updateSubmit', function () {
+            layer.confirm("确认提交吗？",function (index){
+                layer.close(index);
+                if($('#updateTitle').val()=="")
+                {
+                    //layer.msg("书名不能为空")
+                    return
+                }
+                if($('#updateAuthor').val()=="")
+                {
+                    //layer.msg("作者不能为空")
+                    return
+                }
+                if($('#updatePublisher').val()=="")
+                {
+                    //layer.msg("出版社不能为空")
+                    return
+                }
+                if(!($('#updatePrice').val().length==0)&&
+                    ($('#updatePrice').val()<0&&isNaN($('#updatePrice').val())||isNaN($('#updatePrice').val()))){
+                    return
+                }
+                if($('#updateIntroduction').val()=="")
+                {
+                    // layer.msg("介绍不能为空")
+                    return
+                }
+
+                $.ajax({
+                    url: 'http://localhost:8080/book/update',
+                    type: 'post',
+                    data: JSON.stringify({
+                        barCode: $('#updateBarCode').val(), title: $('#updateTitle').val(), author: $('#updateAuthor').val(),
+                        publisher: $('#updatePublisher').val(), isbn: $('#updateISBN').val(), price: $('#updatePrice').val(),
+                        introduction: $('#updateIntroduction').val()
+                    }),
+                    dataType: 'text',
+                    contentType: 'application/json; charset=UTF-8',// 解决415错误
+                    success: (function () {
+                        layer.alert("修改成功!",function() {
+                            location.reload();
+                        })
+
+
+                    })
+                })
+            })
+        })
+    })
+    function borrowBook()
+    {
+        borrow=true;
+        brLayer=layer.open({
+            type: 1,
+            title: '借阅',
+            area: ['28%', '30%'],
+            offset: 'auto',
+            content: $('#borrowAndReturn'),
+        })
+    }
+    function returnBook() {
+        {
+            borrow=false;
+            brLayer=layer.open({
+                type: 1,
+                title: '还书',
+                area: ['28%', '30%'],
+                offset: 'auto',
+                content: $('#borrowAndReturn'),
+            })
+        }
+    }
+    $(document).on('click', '#brSubmit', function () {
+
+
+            if ($('#brAccount').val() == "") {
+                // layer.msg("价格不能为空")
+                return
+            }
+            if ($('#brBarcode').val() == "" || $('#brBarcode').val().length != 13) {
+                // layer.msg("介绍不能为空")
+                return
+            }
+        layer.confirm("您确定要提交吗？" ,{icon: 3, title:'提示'}, function(index) {
+            console.log("yes")
+            var murl;
+            if (borrow) {
+                murl = "http://localhost:8080/borrow/insertByBarCode"
+                $.ajax({
+                    url: murl,
+                    type: 'get',
+                    data: {
+                        userAccount: $('#brAccount').val(),
+                        bookBarCode: $('#brBarcode').val()
+                    },
+                    dataType: 'text',
+                    success: (function (res) {
+                        if (res == "insert succeed") {
+                            layer.msg("借阅成功！")
+                            obj.update({
+                                num: num-1
+                            });
+                            layer.close(brLayer)
+                        } else if (res == "insert fail: maximum number of books borrowed") {
+                            layer.msg("借阅失败，已达到最大借书数！")
+                        }
+                        else if(res=="insert fail: has book overtime")
+                        {
+                            layer.msg("借阅失败，有书超时未还！")
+                        }
+                        else if(res=="insert fail: has borrowed")
+                        {
+                            layer.msg("借阅失败，该书已被借走！")
+                        }
+                        else if(res=="insert fail: error bar code or account")
+                        {
+                            layer.msg("借阅失败，用户名或索引号无效！")
+                        }
+                        else if(res=="insert fail")
+                        {
+                            layer.msg("借阅失败，请重试！")
+                        }
+
+                    })
+                })
+            }
+            else {
+                murl = "http://localhost:8080/return/return"
+                var day,d;
+                $.ajax({
+                    url:" http://localhost:8080/borrow/selectByAccountAndBarCode",
+                    async:false,
+                    type: 'get',
+                    data: {
+                        userAccount: $('#brAccount').val(),
+                        bookBarCode: $('#brBarcode').val(),
+                        page:1,
+                        limit:8
+                    },
+                    dataType: 'json',
+                    success: (function (res) {
+                        console.log(res)
+                        if(res.list[0]==null) {
+                            var index1 = layer.alert('用户名或索引号错误', function () {
+                                layer.close(index1);
+                                window.location.reload()
+                            });
+                        }
+                        day=res.list[0].days;
+                        d = new Date(res.list[0].borrowDate);
+                        d.setDate(d.getDate() + res.list[0].days);
+                    })
+                })
+
+
+                var days = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()
+                    + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+                var currDate=new Date();
+                currDate=currDate.getFullYear()+'-'+(currDate.getMonth()+1)+'-'+currDate.getDate()
+                    +' '+currDate.getHours()+':'+currDate.getMinutes()+':'+currDate.getSeconds();
+
+                var done=false;
+                if(currDate>days)
+                {
+                    var a1 = Date.parse(new Date(currDate));
+                    var a2 = Date.parse(new Date(days));
+                    var dif = parseInt((a1-a2)/ (1000 * 60 * 60 * 24));//核心：时间戳相减，然后除以天数
+
+                    layer.confirm('需要缴纳'+dif*1+'元罚款',function (index1) {
+                        layer.close(index1);
+                        //向服务端发送归还指令
+                        $.ajax({
+                            url: murl,
+                            async:false,
+                            type: 'get',
+                            data: {
+                                userAccount: $('#brAccount').val(),
+                                bookBarCode: $('#brBarcode').val(),
+                                fine:dif
+                            },
+                            dataType: 'text',
+                            success: (function (res) {
+                                layer.close(brLayer)
+                                if (res == "return succeed")
+                                    var index1=layer. alert('归还成功',function(){
+
+                                        layer.close(index1);
+                                        window.location.reload()
+                                    });
+                                else if (res == "return fail")
+                                    var index1=layer. alert('用户名或索引号错误',function(){
+                                        layer.close(index1);
+                                        window.location.reload()
+                                    });
+
+                            })
+                        })
+                    })
+                }
+                else
+                {
+                    $.ajax({
+                        url: murl,
+                        type: 'get',
+                        data: {
+                            userAccount: $('#brAccount').val(),
+                            bookBarCode: $('#brBarcode').val(),
+                            fine:0
+                        },
+                        dataType: 'text',
+                        success: (function (res) {
+                            layer.close(brLayer)
+                            if (res == "return succeed")
+                                var index1=layer. alert('归还成功',function(){
+                                    layer.close(index1);
+                                    window.location.reload()
+                                });
+                            else if (res == "return fail")
+                                var index1=layer. alert('用户名或索引号错误',function(){
+                                    layer.close(index1);
+                                    window.location.reload()
+                                });
+
+                        })
+                    })
+
+                }
+
+                ;
+            }
+        })
+
+    })
+    //监听行工具事件
+
+</script>
+
+<script>
+    //JavaScript代码区域
+    layui.use('element', function(){
+        var element = layui.element;
+
+    });
+</script>
+</body>
+</html>
